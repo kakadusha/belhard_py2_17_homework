@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Default page</title>
+</head>
+
+<body>
+
+    <h1> Default page </h1>
+    <p> Welcome to the default page of the HTTP server! </p>
+    <p> Any text here ... Fox jumped over the lazy dog. </p>
+
+    <p> <a href="1.html">Go to page 1</a></p>
+
+    <p> <a href="test/111">Run test 111</a></p>
+    <p> <a href="test/222">Run test 222</a></p>
+    <p> <a href="test/333">Run test 333</a></p>
+
+    <!-- message/<login>/<text>/ -->
+    <p> <a href="message/andrey/hello">Send message from Andrey</a></p>
+    <p> <a href="message/ivan/hi">Send message from Ivan</a></p>
+
+    <!-- message -->
+    <h2> Send message form </h2>
+    <form action="/message/" method="get">
+        <input type="text" name="login" placeholder="Enter login" jsonfocus="this.value=''" onblur="if(this.value=='') this.value='Enter login'">
+        <input type="text" name="text" placeholder="Enter text" jsonfocus="this.value=''" onblur="if(this.value=='') this.value='Enter text'">
+        <input type="submit" value="Send message" code ="this.form.action='/message/' + this.form.login.value + '/' + this.form.text.value">
+    </form>
+
+
+    <!-- <p> <a href="exit/">Stop HTTP-Server</a></p> -->
+
+    <br>
+    <img src="cat.jpg" alt="Cat" width=200 height="200" style="border-radius: 50%;">
+
+</body>
+</html>

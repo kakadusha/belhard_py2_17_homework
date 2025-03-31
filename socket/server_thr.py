@@ -47,78 +47,47 @@
 
 import socket
 import threading
-import queue
+import os
 import logging
+import platform
+from time import sleep
+
+from sender import Sender
+from auth import AuthUser
 
 # Определяем константу содержащую имя ОС
 # для учёта особенностей данной операционной системы
-import platform
-
 OS_NAME = platform.system()
 
 # Константы
 HOST = "localhost"
 PORT = 7771
-CLIENT_SOCKET_TIMEOUT = 3
-SERVER_SOCKET_TIMEOUT = 30
-WEB_SERVER_PATH = "socket/"
+CLIENT_SOCKET_TIMEOUT = 3  # секунды
+SERVER_SOCKET_TIMEOUT = 5  # секунды
+# путь к папке с файлами
+WEB_SERVER_PATH = os.path.dirname(os.path.abspath(__file__)) + "/web/"
+# WEB_SERVER_PATH = os.path.dirname(__name__) + "/"
+# путь к файлу с пользователями
+AUTH_PATHFILE = os.path.dirname(os.path.abspath(__file__)) + "/auth/users.json"
+# файлы к которым разрешен доступ
+ACCESSIBLE_FILES = [
+    "default.html",
+    "index.html",
+    "1.html",
+    "cat.jpg",
+    "doc.txt",
+    "favicon.ico",
+]
 
-REPLY_OK = b"HTTP/1.1 200 OK\n"
-REPLY_ERR404 = b"HTTP/1.1 404 Not Found\n\n"
-REPLY_HEADERS = b"Host: some.ru\nHost1: some1.ru\n\n"
-REPLY_CUSTOM_START = b"<HTML><HEAD><TITLE>Reply from server</TITLE></HEAD><BODY>"
-REPLY_CUSTOM_END = b"</BODY></HTML>"
 
-# Единственная глобальная переменная
-# доступная всем потокам
+# глобальный обьект для работы с пользователями
+auth = AuthUser(AUTH_PATHFILE)
+# глобальная переменная для управления потоками
 run = True
-
-ACCESSIBLE_FILES = ["1.html", "cat.jpg"]
-
-
-def is_file_accessible(raw_name):
-    """
-    Проверяет есть ли файл в списке доступных файлов, дотупные файлы копим в списке ACCESSIBLE_FILES
-    """
-    file_name = raw_name.lstrip("/")
-    return file_name in ACCESSIBLE_FILES
-
-
-def is_file(raw_name):
-    """
-    Проверяет является ли файлом запрашиваемый путь
-    """
-    name = raw_name.lower().strip("/")
-    if name[-4:] in [".jpg", ".png", ".gif", ".ico", ".txt"] or name[-5:] in [
-        ".html",
-        ".json",
-    ]:
-        return True
-    return False
-
-
-def send_file(file_name, conn):
-
-    if not is_file_accessible(file_name):
-        logging.error(f"нет доступа к файлу {file_name}")
-        conn.send(REPLY_ERR404)
-        return
-
-    try:
-        with open(WEB_SERVER_PATH + file_name.lstrip("/"), "rb") as f:
-            print(f"send file {file_name}")
-            conn.send(REPLY_OK)
-            conn.send(REPLY_HEADERS)
-            conn.send(f.read())
-            logging.info(f"sent file {file_name}")
-
-    except IOError:
-        logging.error(f"нет файла {WEB_SERVER_PATH + file_name.lstrip("/")}")
-        conn.send(REPLY_ERR404)
-        pass
 
 
 def shutdown_socket(s):
+    """Закрывает сокет"""
     # В Linux'ах просто закрыть заблокированный сокет будет мало,
     # он так и не выйдет из состояния блокировки. Нужно передать
     # ему команду на завершение. Но в Windows наоборот, команда
@@ -135,108 +104,79 @@ def shutdown_socket(s):
             logging.info("Сокет уже закрыт")
 
 
-def reciver(client, q):
+def reciver(client, connections):
     """Поток обработки запросов, принимает данные и зовет функцию отправки"""
+
+    sender = Sender(
+        logging, auth, WEB_SERVER_PATH, ACCESSIBLE_FILES
+    )  # создаем экземпляр класса Sender
+
     try:
         # Здесь поток блокируется до тех пор
         # пока не будут считаны все имеющиеся
         # в сокете данные
         data = client.recv(1024)
         if data:  # Если есть данные
-            # Отправляем в очередь сообщений кортеж
-            # содержащий сокет отправителя
-            # и принятые данные
-            q.put((client, data))
             logging.info(
                 f"{client.getpeername()} отправил: {data.decode().splitlines()[0] if data else ''}"
             )
-            sender(client, data)
-            q.task_done()  # Сообщаем, что сообщение обработано
+            sender.process(client, data)
+    except socket.timeout:
+        logging.info(f"Сокет {client.getpeername()} закрыт")
+    except SystemExit:
+        run = False
+        logging.info(f"{client.getpeername()} запросил остановку сервера")
 
-    except:
-        logging.info(f"Сокет {client.getpeername()} закрыт на ошибке")
-        with threading.Lock():
-            connections.remove(client)
-        client.close()  # И закрываем клиентский сокет
+    with threading.Lock():
+        connections.remove(client)
+    logging.info(f"Закончен поток для {client.getpeername()}")
+    client.close()
 
 
-def sender(client, data):
-    """Функция отправки данных"""
+def server_accepter():
+    """Поток принимающий новые соединения на сокет сервера"""
 
-    message = data.decode()
-    ###################################
-    # логика обработки запроса
-    ###################################
-    if message.startswith("GET"):
-        # запрос по протоколу HTTP
-        lines = message.split("\r")
-        path = lines[0].split()[1]
-        if path == "/":
-            # по умолчанию отдаем главную страницу
-            send_file("1.html", client)
-        elif path.startswith("/test/"):
-            client.send(REPLY_CUSTOM_START)
-            client.send(f"<p>тест {path.split('/')[2]} запущен<p>".encode())
-            client.send(REPLY_CUSTOM_END)
-        elif path.startswith("/message/"):
-            _, login, text = path.split("/")
-            client.send(REPLY_CUSTOM_START)
-            client.send(f"<p>{login} - {text}<p>".encode())
-            client.send(REPLY_CUSTOM_END)
-        elif is_file(path):
-            send_file(path, client)
+    #
+    def open_server_socket(server):
+        """Открывает серверный сокет"""
+        # если серверный сокет не закрыт
+        if server.fileno() != -1:
+            server.listen()
+            server.settimeout(SERVER_SOCKET_TIMEOUT)
+            logging.info(f"Сервер запущен на {server.getsockname()}")
         else:
-            # пришли неизвестные данные по HTTP от клиента
-            logging.error(
-                f"от {client.getpeername()} пришли неизвестные данные по HTTP - {path}"
-            )
-            client.send(REPLY_CUSTOM_START)
-            client.send(f"пришли неизвестные  данные по HTTP - {path}".encode())
-            client.send(REPLY_CUSTOM_END)
-    else:
-        # запрос не по протоколу HTTP
-        command, login, password = message.split(";")
-        command = command.split(":")[1]
-        login = login.split(":")[1]
-        password = password.split(":")[1]
-        if command == "reg":
-            if (
-                login.isalnum()
-                and len(login) >= 6
-                and len(password) >= 8
-                and any(c.isdigit() for c in password)
-            ):
-                client.send(f"{login} зарегистрирован".encode())
-            else:
-                client.send(
-                    f"ошибка регистрации {login} - неверный пароль/логин".encode()
-                )
-        elif command == "signin":
-            if (
-                login.isalnum()
-                and len(login) >= 6
-                and len(password) >= 8
-                and any(c.isdigit() for c in password)
-            ):
-                client.send(f"{login} произведен вход".encode())
-            else:
-                client.send(f"ошибка входа {login} - неверный пароль/логин".encode())
-        else:
-            client.send(
-                f"пришли неизвестные  данные - {message}".encode()
-            )  # Отправляем сообщение обратно
+            logging.info("Закрытие серверного сокета")
 
-    # q.task_done()  # Сообщаем, что сообщение обработано
+    #
+    # глобальный переменная для управления потоками
+    global run
 
+    # Множество соединений
+    connections = set()
 
-def accepter(server, connections, q):
-    """Поток принимающий новые соединения"""
+    # server = socket.socket()
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        server.bind((HOST, PORT))
+    except OSError as e:
+        run = False
+        logging.error(f"Ошибка привязки сокета: {e}")
+        server.close()
+        raise
+
+    open_server_socket(server)
     while run:
         try:
             # Здесь поток блокируется до тех пор, пока кто-то не подключится к серверу
-            client, addr = server.accept()
+            client, _ = server.accept()
+        except socket.timeout:
+            # Если сокет закрыт по таймауту, то просто пересоздаём его
+            # server.close()
+            # open_server_socket(server)
+            if not run:
+                break
+            # logging.info(f"Сервер всё еще ждет подключения...")
         except OSError as e:
-            # Если отловлена не ожидаемая ошибка закрытия серверного сокета, а какая-то другая
             if (OS_NAME == "Windows" and e.errno != 10038) or (
                 OS_NAME == "Linux" and e.errno != 22
             ):
@@ -248,9 +188,14 @@ def accepter(server, connections, q):
             with threading.Lock():
                 connections.add(client)
             # Запускаем новый поток, выполняющий обработку его запросов
-            threading.Thread(target=reciver, args=(client, q)).start()
             logging.info(f"Запущен поток для {client.getpeername()}")
-            # send_file("1.html", client)
+            threading.Thread(target=reciver, args=(client, connections)).start()
+
+    run = False
+    for c in connections:
+        shutdown_socket(c)
+    shutdown_socket(server)
+    logging.info("Сервер остановлен")
 
 
 if __name__ == "__main__":
@@ -259,28 +204,17 @@ if __name__ == "__main__":
     )
     logging.info("Запуск...")
 
-    # Очередь сообщений, через которую будут общаться потоки
-    q = queue.Queue()
-    # Множество соединений
-    connections = set()
-
     # Ловим тут исключения если сервер закрыли принудительно и закрываем все сокеты
+    run = True
     try:
-        server = socket.socket()
-        server.bind((HOST, PORT))
-        server.settimeout(SERVER_SOCKET_TIMEOUT)
-        server.listen()
-
-        # print("Сервер запущен на {}\n".format(server.getsockname()))
-        logging.info(f"Сервер запущен на {server.getsockname()}")
-
         # # Поток получающий сообщения из очереди
         # # и отправляющий их всем сокетам в множестве connectionsget
         # threading.Thread(target=sender, args=(q, connections)).start()
         # Поток принимающий новые соединения
-        threading.Thread(target=accepter, args=(server, connections, q)).start()
+        threading.Thread(target=server_accepter, args=()).start()
+        sleep(1)  # даем время на запуск сервера
 
-        while True:
+        while run:
             command = input("\nВведите 'exit' для завершения работы сервера\n\n")
             if command == "exit":  # Если в консоли введена команда exit
                 run = False  # отменяем выполнение циклов во всех потоках
@@ -288,10 +222,6 @@ if __name__ == "__main__":
                 break  # и выходим из этого цикла
 
     except Exception as e:
-        logging.error(f"Ошибка: {e}")
-    finally:
         run = False
-        for c in connections:
-            shutdown_socket(c)
-        shutdown_socket(server)
-        logging.info("Сервер остановлен")
+        logging.error(f"Ошибка: {e}")
+        raise
