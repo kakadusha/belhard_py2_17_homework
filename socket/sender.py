@@ -116,6 +116,10 @@ class Sender:
             f"от {client.getpeername()} пришли неизвестные данные по HTTP - {bad_data}"
         )
 
+    def _is_http(self, message: str) -> bool:
+        """начинается с get и содержит HTTP/"""
+        return message.startswith("GET") and "HTTP/" in message
+
     def process(self, client, data):
         """Функция отправки данных
         принимает данные от клиента и отправляет ответ
@@ -131,9 +135,7 @@ class Sender:
         ##########################
         # логика обработки запроса
         ##########################
-        if (
-            message.startswith("GET") and "HTTP/" in message
-        ):  # начинается с get и содержит HTTP/
+        if self._is_http(message):
             # запрос по протоколу HTTP
             lines = message.split("\r")
             path = lines[0].split()[1]
