@@ -178,4 +178,4 @@ cython_debug/
 .vscode/settings.json
 
 # lessons examples from belhard py-2
-example/
+_example/
