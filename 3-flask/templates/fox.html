@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<title>{{title}}</title>
+<style>
+        /* # CSS */
+        img{
+            border-radius: 10px;
+        }
+
+       /* только те p которые внутри div */
+       div p{
+            margin: 5px;
+            padding: 10px;
+            background-color: rgb(215, 200, 233);
+            height: 70px;
+            width: 150px;
+
+
+            /* изменения при изменении будут происходить 0,1 сек */
+            transition: all 0.1s;
+
+        }
+
+        div p:nth-child(3n){ /*каждый второй*/
+
+            background-color: rgb(191, 153, 234);
+        }
+        p span{
+            margin-right: 30px;
+        }
+
+        div p:hover{
+            /* hover - указывает что должно происходить при наведении мышкой */
+            box-shadow: 6px 8px 7px 0px black;
+            box-shadow: 6px 6px 11px 1px black;
+            background-color: rgb(138, 81, 208);
+            font-size: 22px;
+        }
+
+        .green{
+            color: green;
+        }
+
+</style>
+<body>
+    <h1>{{title}}</h1>
+
+    <div name="foxes" id="foxes" class="green">
+        <h4>{{title}}</h4>
+
+        {% for fox in foxes %}
+            <p>
+                <span >
+                <img src="{{fox}}" style="height: 70px; align-self: center;">
+                </span>
+            </p>
+        {% endfor %}
+    </div>
+
+    <p>
+        <a href="/">На главную</a>
+    </p>
+</body>
+</html>
