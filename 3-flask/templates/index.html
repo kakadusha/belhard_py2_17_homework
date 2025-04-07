@@ -3,13 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>FoxyDucks</title>
     <style>
         /* # CSS */
-        body{
-            background-color: rgba(107, 185, 76, 0.444);
-            /* background-image: url(); */
-        }
 
         a{
             padding: 5px;
@@ -22,19 +18,37 @@
     </style>
 </head>
 <body>
-    <p style="align-self: center; color: aliceblue;">
+    <p>
         <a href="duck/">Утка</a>
-        <a href="fox/1/">Лиса</a>
+        <a id="fox_link" href="fox/1/">Лиса</a>
     </p>
     <!-- <hr color="green"> -->
     <br>
     <img src="https:\/\/randomfox.ca\/images\/13.jpg" alt="123" width="100" style="border-radius: 50%;">
 
+
+    <script>
+        // Получаем элемент ссылки
+        const fox_link = document.getElementById('fox_link');
+
+        function getRandomNumber(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function makeLink() {
+            // Генерируем случайное число
+            const randomNumber = getRandomNumber(1, 10);
+            // Заменяем /1/ на случайное число
+            fox_link.href = 'fox/'+randomNumber+'/';
+            //href.replace('/d+/', '/'+randomNumber+'/');
+        }
+
+        // Добавляем обработчик события клика
+        fox_link.addEventListener('mouseover', function(event) {
+            makeLink();
+        });
+    </script>
+
 </body>
-<script>
-
-
-</script>
 
 </html>
-

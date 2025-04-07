@@ -1,69 +1,91 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta charset="utf-8" />
+    <!--style>
+          .gallery {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(20%, 1fr));
+              /* Автоматическое подстраивание количества столбцов */
+              grid-gap: 10px;
+              /* Расстояние между картинками */
+              align-items: center
+
+          }
+
+          .gallery img {
+              width: 100%;
+              height: auto;
+              border-radius: 5px;
+              /* Закругленные края */
+              transition: box-shadow 1s ease;
+              /* Анимация тени */
+          }
+
+          .gallery img:hover {
+              box-shadow: 0 0 10px rgba(0, 0, 0, 1);
+              /* Тень при наведении */
+          }
+      </style-->
+    <style>
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-gap: 10px;
+        }
+
+        .gallery img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+            transition: box-shadow 1s ease;
+            object-fit: cover;
+            opacity: 0;
+            /* Начальная непрозрачность */
+            transition: opacity 0.4s ease-in-out;
+            /* Анимация непрозрачности */
+        }
+
+        .gallery img.fade-in {
+            opacity: 0.9;
+            /* Конечная непрозрачность */
+        }
+
+        .gallery img:hover {
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            opacity: 1;
+
+        }
+    </style>
+
 </head>
 <title>{{title}}</title>
-<style>
-        /* # CSS */
-        img{
-            border-radius: 10px;
-        }
 
-       /* только те p которые внутри div */
-       div p{
-            margin: 5px;
-            padding: 10px;
-            background-color: rgb(215, 200, 233);
-            height: 70px;
-            width: 150px;
-
-
-            /* изменения при изменении будут происходить 0,1 сек */
-            transition: all 0.1s;
-
-        }
-
-        div p:nth-child(3n){ /*каждый второй*/
-
-            background-color: rgb(191, 153, 234);
-        }
-        p span{
-            margin-right: 30px;
-        }
-
-        div p:hover{
-            /* hover - указывает что должно происходить при наведении мышкой */
-            box-shadow: 6px 8px 7px 0px black;
-            box-shadow: 6px 6px 11px 1px black;
-            background-color: rgb(138, 81, 208);
-            font-size: 22px;
-        }
-
-        .green{
-            color: green;
-        }
-
-</style>
 <body>
-    <h1>{{title}}</h1>
 
-    <div name="foxes" id="foxes" class="green">
-        <h4>{{title}}</h4>
+    <h2>{{title}}</h2>
 
+    <div class="gallery">
         {% for fox in foxes %}
-            <p>
-                <span >
-                <img src="{{fox}}" style="height: 70px; align-self: center;">
-                </span>
-            </p>
+        <img src="{{fox}}">
         {% endfor %}
+
     </div>
 
     <p>
         <a href="/">На главную</a>
     </p>
+
+    <script>
+        const images = document.querySelectorAll('img');
+        images.forEach(img => {
+            img.addEventListener('load', () => {
+                img.classList.add('fade-in');
+            });
+        });
+    </script>
+
 </body>
+
 </html>
