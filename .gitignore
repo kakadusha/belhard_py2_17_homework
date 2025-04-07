@@ -175,7 +175,8 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
-.vscode/settings.json
+.vscode/
 
 # lessons examples from belhard py-2
 _example/
+home/valent/my/belhard_py2_17_homework/3-flask/_example_weather/
