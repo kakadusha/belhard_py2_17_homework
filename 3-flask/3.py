@@ -62,7 +62,7 @@ def get_foxy_urls(count: int, max: int) -> list:
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("default_page.html")
 
 
 @app.route("/duck/")
@@ -85,10 +85,21 @@ def fox(num):
     )
 
 
+@app.route("/page1/")
+def home():
+    return render_template("page1.html")
+
+
+@app.route("/page2/")
+def page2():
+    return render_template("page2.html")
+
+
 # Сработает если ошибка 404 - т.е. любой другой путь который выше не предусмотрен
 @app.errorhandler(404)
 def page_not_found(error):
     return '<h1 style="color:red">такой страницы не существует</h1>'
 
 
-app.run(debug=True)
+if __name__ == "__main__":
+    app.run(debug=True)
