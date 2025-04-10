@@ -1,3 +1,3 @@
 docker-compose down
-docker-compose buil
+docker-compose build
 docker-compose up -d
