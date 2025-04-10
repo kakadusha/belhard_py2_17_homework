@@ -1,44 +1,4 @@
-beautifulsoup4==4.12.2
-boltons @ file:///home/conda/feedstock_root/build_artifacts/boltons_1677499911949/work
-Brotli @ file:///home/conda/feedstock_root/build_artifacts/brotli-split_1693583441880/work
-certifi==2023.7.22
-cffi @ file:///home/conda/feedstock_root/build_artifacts/cffi_1671179353105/work
-charset-normalizer @ file:///home/conda/feedstock_root/build_artifacts/charset-normalizer_1688813409104/work
-click==8.1.7
-colorama @ file:///home/conda/feedstock_root/build_artifacts/colorama_1666700638685/work
-conda==23.3.1
-conda-libmamba-solver @ file:///home/conda/feedstock_root/build_artifacts/conda-libmamba-solver_1680508672016/work/src
-conda-package-handling @ file:///home/conda/feedstock_root/build_artifacts/conda-package-handling_1691048088238/work
-conda_package_streaming @ file:///home/conda/feedstock_root/build_artifacts/conda-package-streaming_1691009212940/work
-cryptography @ file:///home/conda/feedstock_root/build_artifacts/cryptography-split_1691444160254/work
-diskcache==5.6.3
-filelock==3.13.1
-gdown==4.7.1
-idna @ file:///home/conda/feedstock_root/build_artifacts/idna_1663625384323/work
-jsonpatch @ file:///home/conda/feedstock_root/build_artifacts/jsonpatch_1632759296524/work
-jsonpointer==2.0
-libmambapy @ file:///home/conda/feedstock_root/build_artifacts/mamba-split_1680791035685/work/libmambapy
-llama_cpp_python==0.2.14
-mamba @ file:///home/conda/feedstock_root/build_artifacts/mamba-split_1680791035685/work/mamba
-markdown-it-py==3.0.0
-mdurl==0.1.2
-numpy==1.26.1
-packaging @ file:///home/conda/feedstock_root/build_artifacts/packaging_1681337016113/work
-pluggy @ file:///home/conda/feedstock_root/build_artifacts/pluggy_1693086607691/work
-pycosat @ file:///home/conda/feedstock_root/build_artifacts/pycosat_1666836542287/work
-pycparser @ file:///home/conda/feedstock_root/build_artifacts/pycparser_1636257122734/work
-Pygments==2.16.1
-pyOpenSSL @ file:///home/conda/feedstock_root/build_artifacts/pyopenssl_1685514481738/work
-PySocks @ file:///home/conda/feedstock_root/build_artifacts/pysocks_1661604839144/work
-requests @ file:///home/conda/feedstock_root/build_artifacts/requests_1684774241324/work
-rich==13.6.0
-rich-click==1.7.1
-ruamel.yaml @ file:///home/conda/feedstock_root/build_artifacts/ruamel.yaml_1686993901728/work
-ruamel.yaml.clib @ file:///home/conda/feedstock_root/build_artifacts/ruamel.yaml.clib_1670412719074/work
-six==1.16.0
-soupsieve==2.5
-toolz @ file:///home/conda/feedstock_root/build_artifacts/toolz_1657485559105/work
-tqdm @ file:///home/conda/feedstock_root/build_artifacts/tqdm_1691671248568/work
-typing_extensions==4.8.0
-urllib3 @ file:///home/conda/feedstock_root/build_artifacts/urllib3_1689789803562/work
-zstandard @ file:///home/conda/feedstock_root/build_artifacts/zstandard_1667296087208/work
+Flask>=3.1.0
+Flask-SQLAlchemy>=3.1.1
+pydantic>=2.11.2
+requests>=2.32.3

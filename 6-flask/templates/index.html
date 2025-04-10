@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoxyDucks</title>
+    <style>
+        /* # CSS */
+
+        a{
+            padding: 5px;
+            border: 5px solid;
+            border-color: rgba(79, 61, 156, 0.897);
+            _margin: 40px;
+            border-radius: 41%;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <p>
+        <a href="duck/">Утка</a>
+        <a id="fox_link" href="fox/1/">Лиса</a>
+    </p>
+    <!-- <hr color="green"> -->
+    <br>
+    <img src="https:\/\/randomfox.ca\/images\/13.jpg" alt="123" width="100" style="border-radius: 50%;">
+
+
+    <script>
+        // Получаем элемент ссылки
+        const fox_link = document.getElementById('fox_link');
+
+        function getRandomNumber(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function makeLink() {
+            // Генерируем случайное число
+            const randomNumber = getRandomNumber(1, 10);
+            // Заменяем /1/ на случайное число
+            fox_link.href = 'fox/'+randomNumber+'/';
+            //href.replace('/d+/', '/'+randomNumber+'/');
+        }
+
+        // Добавляем обработчик события клика
+        fox_link.addEventListener('mouseover', function(event) {
+            makeLink();
+        });
+    </script>
+
+</body>
+
+</html>

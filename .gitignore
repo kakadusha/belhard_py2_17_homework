@@ -180,3 +180,4 @@ cython_debug/
 # lessons examples from belhard py-2
 _example/
 3-flask/_example_weather/
+instance/
