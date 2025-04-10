@@ -25,8 +25,8 @@
             <p class="note">navigation</p>
 
             <a href="/">Главная</a>
-            <a href="duck/">Утка</a>
-            <a href="fox/1/" id="fox_link">Лиса</a>
+            <a href="/duck/">Утка</a>
+            <a href="/fox/1/" id="fox_link">Лиса</a>
             <a href="/page1/">Страница 1</a>
             <a href="/page2/">Страница 2</a>
         </nav>
@@ -60,7 +60,7 @@
             // Генерируем случайное число
             const randomNumber = getRandomNumber(1, 10);
             // Заменяем /1/ на случайное число
-            fox_link.href = 'fox/' + randomNumber + '/';
+            fox_link.href = '/fox/' + randomNumber + '/';
             //href.replace('/d+/', '/'+randomNumber+'/');
         }
         // Добавляем обработчик события клика

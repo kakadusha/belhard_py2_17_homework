@@ -1,91 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'layout.html' %}
 
-<head>
-    <meta charset="utf-8" />
-    <!--style>
-          .gallery {
-              display: grid;
-              grid-template-columns: repeat(auto-fit, minmax(20%, 1fr));
-              /* Автоматическое подстраивание количества столбцов */
-              grid-gap: 10px;
-              /* Расстояние между картинками */
-              align-items: center
+{% block content %}
 
-          }
+<style>
+    .gallery {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        grid-gap: 10px;
+    }
 
-          .gallery img {
-              width: 100%;
-              height: auto;
-              border-radius: 5px;
-              /* Закругленные края */
-              transition: box-shadow 1s ease;
-              /* Анимация тени */
-          }
+    .gallery img {
+        width: 100%;
+        height: auto;
+        border-radius: 5px;
+        transition: box-shadow 1s ease;
+        object-fit: cover;
+        opacity: 0;
+        /* Начальная непрозрачность */
+        transition: opacity 0.4s ease-in-out;
+        /* Анимация непрозрачности */
+    }
 
-          .gallery img:hover {
-              box-shadow: 0 0 10px rgba(0, 0, 0, 1);
-              /* Тень при наведении */
-          }
-      </style-->
-    <style>
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            grid-gap: 10px;
-        }
+    .gallery img.fade-in {
+        opacity: 0.9;
+        /* Конечная непрозрачность */
+    }
 
-        .gallery img {
-            width: 100%;
-            height: auto;
-            border-radius: 5px;
-            transition: box-shadow 1s ease;
-            object-fit: cover;
-            opacity: 0;
-            /* Начальная непрозрачность */
-            transition: opacity 0.4s ease-in-out;
-            /* Анимация непрозрачности */
-        }
+    .gallery img:hover {
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        opacity: 1;
 
-        .gallery img.fade-in {
-            opacity: 0.9;
-            /* Конечная непрозрачность */
-        }
+    }
+</style>
 
-        .gallery img:hover {
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            opacity: 1;
-
-        }
-    </style>
-
-</head>
-<title>{{title}}</title>
-
-<body>
-
+<div class="article">
     <h2>{{title}}</h2>
 
     <div class="gallery">
         {% for fox in foxes %}
         <img src="{{fox}}">
         {% endfor %}
-
     </div>
 
-    <p>
-        <a href="/">На главную</a>
-    </p>
+</div>
 
-    <script>
-        const images = document.querySelectorAll('img');
-        images.forEach(img => {
-            img.addEventListener('load', () => {
-                img.classList.add('fade-in');
-            });
+<script>
+    const images = document.querySelectorAll('img');
+    images.forEach(img => {
+        img.addEventListener('load', () => {
+            img.classList.add('fade-in');
         });
-    </script>
+    });
+</script>
 
-</body>
-
-</html>
+{% endblock %}
