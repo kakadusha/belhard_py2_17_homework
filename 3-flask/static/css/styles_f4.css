@@ -35,17 +35,17 @@ main {
     flex-direction: column;
 }
 
-article { /*тег*/
+article {
     background-color: #a0c4d5;
     flex: 5 2 12em;
     padding: 1em;
 }
 
-nav { /*тег*/
+nav {
     flex: 2 2 6em;
     background-color: #88a0ab;
 }
-aside { /*тег*/
+aside {
     flex: 1;
     background-color: #88a0ab;
 }
