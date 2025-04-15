@@ -3,15 +3,15 @@ version: '3'
 services:
   app:
     container_name: pyweb_app
-    build: 
+    build:
         context: ..
         dockerfile: docker/Dockerfile
     restart: on-failure
     ports:
       - 5000:5000
     volumes:
-      - ${PWD}/../static:/3-flask/static
-      - ${PWD}/../templates:/3-flask/templates
+      - ${PWD}/../static:/6-flask/static
+      - ${PWD}/../templates:/6-flask/templates
     networks:
       aidanet:
         ipv4_address: 172.28.1.2
