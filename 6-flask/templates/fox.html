@@ -33,6 +33,7 @@
     }
 </style>
 
+<article>
 <div class="article">
     <h2>{{title}}</h2>
 
@@ -42,15 +43,18 @@
         {% endfor %}
     </div>
 
-</div>
-
-<script>
-    const images = document.querySelectorAll('img');
-    images.forEach(img => {
-        img.addEventListener('load', () => {
-            img.classList.add('fade-in');
+    <script>
+        const images = document.querySelectorAll('img');
+        images.forEach(img => {
+            img.addEventListener('load', () => {
+                img.classList.add('fade-in');
+            });
         });
-    });
-</script>
+    </script>
+
+</div>
+</article>
+
+
 
 {% endblock %}
