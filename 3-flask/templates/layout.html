@@ -9,28 +9,29 @@
 </head>
 
 <body>
+    {% block title %}
+    {% if title %}
+    <header>
+        <p class="note">header</p>
+        <h1>{{title}}</h1>
+    </header>
+    {% else %}
     <header>
         <p class="note">header</p>
         <h1>Welcome to Flask app</h1>
     </header>
+    {% endif %}
+    {% endblock %}
+
     <main>
         <p class="note floating-text">main</p>
         <!-- MAIN CONTENT HERE -->
-
         {% block content %}
         {% endblock %}
-
         <!---->
-        <nav>
-            <p class="note">navigation</p>
+        {% include '_navigation.html' %}
 
-            <a href="/">Главная</a>
-            <a href="duck/">Утка</a>
-            <a href="fox/1/" id="fox_link">Лиса</a>
-            <a href="/page1/">Страница 1</a>
-            <a href="/page2/">Страница 2</a>
-        </nav>
-
+        {% block aside %}
         <aside>
             <p class="note">sidebar</p>
             <div class="flex-container">
@@ -40,15 +41,19 @@
                 </div>
             </div>
         </aside>
+        {% endblock %}
+
     </main>
+
+    {% block footer %}
     <footer>
         <p class="note">footer</p>
         <p>© 2023 Мое Flask Приложение</p>
     </footer>
+    {% endblock %}
 
     <script>
         // Рандомизация перехода на страницу Лиса (меняет количество лис)
-
         // Получаем элемент ссылки
         const fox_link = document.getElementById('fox_link');
 
