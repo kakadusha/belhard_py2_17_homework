@@ -1,0 +1,137 @@
+@import url("Boilerplate_styles.css");
+
+* {
+    box-sizing: border-box;
+}
+
+/* переменные */
+:root {
+    --base-color: #333;
+    --bg-color: #e9edf1;
+    --link-color: #333;
+    --hover-color: #007bff;
+    --note-color: #7b7b7b;
+  }
+
+
+html,
+body {
+    padding: 0;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    color: #fff;
+    font-size: 1.1em;
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    background: var(--bg-color);
+    color: var(--base-color);
+    position: relative; /* относительное зацепить floating-text */
+    display: flex;
+    flex-direction: column;
+}
+
+article {
+    background-color: #a0c4d5;
+    flex: 5 2 12em;
+    padding: 1em;
+}
+
+nav {
+    flex: 2 2 6em;
+    background-color: #88a0ab;
+}
+aside {
+    flex: 1;
+    background-color: #88a0ab;
+}
+
+nav {
+    order: -1;
+}
+
+header,
+footer {
+    flex: 0 0 5em;
+    background-color: #3a7591;
+}
+
+@media screen and (min-width: 600px) {
+    body {
+        min-height: 100vh;
+    }
+    main {
+        position: relative; /* относительное зацепить floating-text */
+        flex-direction: row;
+        min-height: 100%;
+        flex: 1 1 auto;
+    }
+    nav { /*тег*/
+        flex: 2 2 6em;
+        max-width: 150px;
+        background-color: #88a0ab;
+    }
+}
+
+/** стили для надписей **/
+
+.note {
+    font-style: italic;
+    font-size: x-small;
+    color: var(--note-color);
+    transition: color 0.3s ease;
+}
+.note:hover {
+    color: var(--base-color);
+}
+
+.floating-text {
+    position: absolute; /* Абсолютное позиционирование для плавающего текста */
+    align-self: center;
+    background-color: rgba(217, 127, 127, 0.3); /* с прозрачностью */
+    padding: 2px;
+    border-radius: 2px;
+    z-index: 10; /* текст находится выше других элементов */
+}
+
+nav a {
+    margin: 0 25px;
+    text-decoration: none;
+
+    color: var(--link-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+nav a:hover {
+    color: var(--hover-color);
+}
+
+/* ну и до кучи немного флексанём */
+.flex-container {
+    display: flex;
+    justify-content: space-around;
+    margin: 10px;
+}
+.flex-item {
+    _background-color: #007bff;
+    color: white;
+    padding: 20px;
+    margin: 10px;
+    flex-grow: 1;
+    text-align: center;
+    transition: all 100ms linear;
+}
+.flex-item:hover {
+    box-shadow: 1px 1px 5px 1px;
+}
+.flex-img {
+    flex-grow: 1;
+    text-align: center;
+}

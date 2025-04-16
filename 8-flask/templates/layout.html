@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask Flexbox Template</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles_f4.css') }}">
+</head>
+
+<body>
+    <header>
+        <p class="note">header</p>
+        <h1>Welcome to Flask app</h1>
+    </header>
+    <main>
+        <p class="note floating-text">main</p>
+        <!-- MAIN CONTENT HERE -->
+
+        {% block content %}
+        {% endblock %}
+
+        <!---->
+        <nav>
+            <p class="note">navigation</p>
+
+            <a href="/">Главная</a>
+            <a href="/duck/">Утка</a>
+            <a href="/fox/1/" id="fox_link">Лиса</a>
+            <a href="/page1/">Страница 1</a>
+            <a href="/page2/">Страница 2</a>
+        </nav>
+
+        <aside>
+            <p class="note">sidebar</p>
+            <div class="flex-container">
+                <div>
+                    <img class="flex-img" src="{{ url_for('static', filename='pic/cat.jpg') }}" alt="Cat" width=50
+                        height="50" style="border-radius: 50%; align-content: center;">
+                </div>
+            </div>
+        </aside>
+    </main>
+    <footer>
+        <p class="note">footer</p>
+        <p>© 2023 Мое Flask Приложение</p>
+    </footer>
+
+    <script>
+        // Рандомизация перехода на страницу Лиса (меняет количество лис)
+
+        // Получаем элемент ссылки
+        const fox_link = document.getElementById('fox_link');
+
+        function getRandomNumber(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function makeLink() {
+            // Генерируем случайное число
+            const randomNumber = getRandomNumber(1, 10);
+            // Заменяем /1/ на случайное число
+            fox_link.href = '/fox/' + randomNumber + '/';
+            //href.replace('/d+/', '/'+randomNumber+'/');
+        }
+        // Добавляем обработчик события клика
+        fox_link.addEventListener('mouseover', function(event) {
+            makeLink();
+        });
+    </script>
+
+</body>
+
+</html>
