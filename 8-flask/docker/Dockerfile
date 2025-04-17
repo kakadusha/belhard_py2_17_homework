@@ -1,6 +1,6 @@
 FROM python:3.8
 
-RUN pip install flask requests gunicorn
+RUN pip install flask requests gunicorn flask_sqlalhemy
 
 WORKDIR /8-flask
 
