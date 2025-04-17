@@ -1,0 +1,78 @@
+<style>
+    .quiz_form {
+        border: 1px solid black;
+        border-radius: 10px;
+        width: 40%;
+        height: 40%;
+        min-width: 200px;
+        min-height: 150px;
+        background-color: rgb(231 221 234);
+        text-align: center;
+        box-shadow: 4px 4px 7px 0px #393737;
+    }
+</style>
+
+{% extends "layout.html" %}
+
+{% block main_menu %}
+<nav>
+    {{ super() }}
+    {% include 'gal_menu.html' %}
+</nav>
+{% endblock %}
+
+{% block content %}
+<article>
+    <form action="/select-galery/" method="post">
+        <div class="form1">
+            <h2>Выберите Галерею</h2>
+            <div class="gallery-buttons">
+                {% for q in quizes %}
+                <div class="flex-item">
+                    <input type="submit" id="galery-{{ q.id }}" name="galery" value="{{ q.id }}" style="display: none;">
+                    <label for="galery-{{ q.id }}">
+                        <h5>{{ q.name }}</h4>
+                    </label>
+
+                </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </form>
+
+    <style>
+        .gallery-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        .flex-item {
+            margin: 10px;
+            min-width: 330px;
+
+            cursor: pointer;
+            /* Указывает, что элемент кликабелен */
+        }
+
+        .flex-item label {
+            display: block;
+            padding: 5px;
+            text-align: center;
+        }
+/*
+        .flex-item label:hover {
+            border: 1px solid var(--article-color);
+            transition: border 1s ease;
+        } */
+
+        .flex-item input[type="radio"]:checked+label {
+            background-color: lightgreen;
+            /* Изменяем фон выбранного элемента */
+        }
+    </style>
+
+</article>
+<!--/div-->
+{% endblock %}

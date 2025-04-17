@@ -10,7 +10,11 @@
     --bg-color: #e9edf1;
     --link-color: #333;
     --hover-color: #007bff;
+    --border-color: #91c5fcfd;
     --note-color: #7b7b7b;
+    --article-color: #f1f4f6;
+    --aside-color: #ecf1f5;
+    --head-color: #e6f1f5;
   }
 
 
@@ -18,11 +22,10 @@ html,
 body {
     padding: 0;
     margin: 0;
-    font-family: Arial, sans-serif;
+    _font-family: Arial, sans-serif;
 }
 
 body {
-    color: #fff;
     font-size: 1.1em;
     padding: 1em;
     display: flex;
@@ -38,18 +41,18 @@ main {
 }
 
 article {
-    background-color: #a0c4d5;
+    background-color: var(--article-color);
     flex: 5 2 12em;
     padding: 1em;
 }
 
 nav {
     flex: 2 2 6em;
-    background-color: #88a0ab;
+    background-color: var(--aside-color);
 }
 aside {
     flex: 1;
-    background-color: #88a0ab;
+    background-color: var(--aside-color);
 }
 
 nav {
@@ -59,7 +62,8 @@ nav {
 header,
 footer {
     flex: 0 0 5em;
-    background-color: #3a7591;
+    color: var(--base-color);
+    background-color: var(--head-color);
 }
 
 @media screen and (min-width: 600px) {
@@ -75,7 +79,6 @@ footer {
     nav { /*тег*/
         flex: 2 2 6em;
         max-width: 150px;
-        background-color: #88a0ab;
     }
 }
 
@@ -106,11 +109,12 @@ nav a {
 
     color: var(--link-color);
     text-decoration: none;
-    transition: color 0.3s ease;
 }
 
 nav a:hover {
     color: var(--hover-color);
+    transition: color 0.7s ease;
+
 }
 
 /* ну и до кучи немного флексанём */
@@ -120,16 +124,18 @@ nav a:hover {
     margin: 10px;
 }
 .flex-item {
-    _background-color: #007bff;
-    color: white;
+    _color: white;
     padding: 20px;
     margin: 10px;
+    border-radius: 10px;
     flex-grow: 1;
     text-align: center;
     transition: all 100ms linear;
 }
 .flex-item:hover {
-    box-shadow: 1px 1px 5px 1px;
+    box-shadow: 1px 1px 8px 1px var(--border-color);
+    color: var(--hover-color);
+    transition: all 0.8s linear;
 }
 .flex-img {
     flex-grow: 1;

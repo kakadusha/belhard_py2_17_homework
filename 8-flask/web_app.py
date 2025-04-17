@@ -59,7 +59,9 @@ db.init_app(app)
 with app.app_context():
     db_add_new_data()
 
+##########
 # ROUTES #
+##########
 
 
 @app.route("/")
@@ -88,19 +90,65 @@ def fox(num):
 
 
 @app.route("/select-galery/", methods=["POST", "GET"])
-def view_quiz():
+def view_galery():
     if request.method == "GET":
-        session["quiz_id"] = -1
+        session["galery_id"] = -1
         quizes = Galery.query.all()
         # print(quizes)
         return render_template(
-            "select_galery.html", quizes=quizes, html_config=html_config
+            "galery_select.html", quizes=quizes, html_config=html_config
         )
-    session["quiz_id"] = request.form.get("quiz")
-    session["question_n"] = 0
+    session["galery_id"] = request.form.get("galery")
+    session["painting_n"] = 0
     session["question_id"] = 0
     session["right_answers"] = 0
-    return redirect(url_for("view_question"))
+    return redirect(url_for("view_painting"))
+
+
+@app.route("/painting/", methods=["POST", "GET"])
+def view_painting():
+
+    # если квиз еще не выбран - перенаправляем на выбор
+    if not session["galery_id"] or session["galery_id"] == -1:
+        return redirect(url_for("view_galery"))
+
+    # если пост значит пришел ответ на вопрос
+    if request.method == "POST":
+        painting = Painting.query.filter_by(id=session["question_id"]).one()
+        # если ответы сходятся значит +1
+        if painting.answer == request.form.get("ans_text"):
+            session["right_answers"] += 1
+        # следующий вопрос
+        session["painting_n"] += 1
+
+    galery = Galery.query.filter_by(id=session["galery_id"]).one()
+
+    # если вопросы закончились
+    if int(session["painting_n"]) >= len(galery.painting):
+        session["galery_id"] = -1  # чтобы больше не работала страница question
+        return redirect(url_for("view_result"))
+
+    # если вопросы еще не закончились
+    else:
+        painting = galery.painting[session["painting_n"]]
+        session["question_id"] = painting.id
+        answers = [painting.answer, painting.wrong1, painting.wrong2, painting.wrong3]
+        # shuffle(answers)
+
+        return render_template(
+            "painting.html", answers=answers, question=painting, html_config=html_config
+        )
+
+
+@app.route("/result/")
+def view_result():
+    return render_template(
+        "result.html",
+        right=session["right_answers"],
+        total=session["painting_n"],
+        html_config=html_config,
+        url=url_for("view_galery"),
+    )
 
 
 @app.route("/page1/")
