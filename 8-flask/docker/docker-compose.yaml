@@ -12,6 +12,7 @@ services:
     volumes:
       - ${PWD}/../static:/8-flask/static
       - ${PWD}/../templates:/8-flask/templates
+      - ${PWD}/../db:/8-flask/db
     networks:
       aidanet:
         ipv4_address: 172.28.1.2
