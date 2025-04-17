@@ -10,11 +10,11 @@
 
 <body>
     <header>
-        <p class="note">header</p>
+        <!--p class="note">header</p-->
         <h1>Welcome to Flask app</h1>
     </header>
     <main>
-        <p class="note floating-text">main</p>
+        <!--p class="note floating-text">main</p-->
         <!-- MAIN CONTENT HERE -->
 
         {% block content %}
@@ -23,7 +23,7 @@
         <!---->
         {% block main_menu %}
         <nav>
-            <p class="note">navigation</p>
+            <!--p class="note">navigation</p-->
 
             <a href="/">Главная</a>
             <a href="/duck/">Утка</a>
@@ -35,7 +35,7 @@
         {% endblock %}
 
         <aside>
-            <p class="note">sidebar</p>
+            <!--p class="note">sidebar</p-->
             <div class="flex-container">
                 <div>
                     <img class="flex-img" src="{{ url_for('static', filename='pic/cat.jpg') }}" alt="Cat" width=50
@@ -45,7 +45,7 @@
         </aside>
     </main>
     <footer>
-        <p class="note">footer</p>
+        <!--p class="note">footer</p-->
         <h5><small>© 2023 Мое Flask Приложение</small></h5>
     </footer>
 
