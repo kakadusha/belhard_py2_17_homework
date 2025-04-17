@@ -13,6 +13,10 @@ class User(db.Model):
         "Galery", backref="user", cascade="all, delete, delete-orphan"
     )
 
+    def __init__(self, name) -> None:
+        super().__init__()
+        self.name = name
+
     def __repr__(self):
         return f"{self.name}"
 
@@ -31,6 +35,7 @@ class Galery(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    painting = []
 
     def __init__(self, name: str, user: User) -> None:
         super().__init__()
@@ -71,10 +76,12 @@ def db_add_new_data():
     user2 = User(name="User2")
 
     gals = [
-        Galery("QUIZ 11", user1),
-        Galery("QUIZ 22", user1),
-        Galery("QUIZ 33", user2),
-        Galery("QUIZ 44", user2),
+        Galery("Небо", user1),
+        Galery("Птицы", user1),
+        Galery("Цветы", user2),
+        Galery("Миниатюры", user2),
+        Galery("Животные", user2),
+        Galery("Другое", user2),
     ]
 
     paintings = [
@@ -135,6 +142,11 @@ def db_add_new_data():
     gals[3].painting.append(paintings[0])
     gals[3].painting.append(paintings[1])
     gals[3].painting.append(paintings[3])
+
+    gals[4].painting.append(paintings[6])
+    gals[4].painting.append(paintings[0])
+    gals[4].painting.append(paintings[1])
+    gals[4].painting.append(paintings[3])
 
     # db.session.add(quiz)
     db.session.add_all(gals)
