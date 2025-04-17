@@ -1,0 +1,143 @@
+@import url("Boilerplate_styles.css");
+
+* {
+    box-sizing: border-box;
+}
+
+/* переменные */
+:root {
+    --base-color: #333;
+    --bg-color: #e9edf1;
+    --link-color: #333;
+    --hover-color: #007bff;
+    --border-color: #91c5fcfd;
+    --note-color: #7b7b7b;
+    --article-color: #f1f4f6;
+    --aside-color: #ecf1f5;
+    --head-color: #e6f1f5;
+  }
+
+
+html,
+body {
+    padding: 0;
+    margin: 0;
+    _font-family: Arial, sans-serif;
+}
+
+body {
+    font-size: 1.1em;
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    background: var(--bg-color);
+    color: var(--base-color);
+    position: relative; /* относительное зацепить floating-text */
+    display: flex;
+    flex-direction: column;
+}
+
+article {
+    background-color: var(--article-color);
+    flex: 5 2 12em;
+    padding: 1em;
+}
+
+nav {
+    flex: 2 2 6em;
+    background-color: var(--aside-color);
+}
+aside {
+    flex: 1;
+    background-color: var(--aside-color);
+}
+
+nav {
+    order: -1;
+}
+
+header,
+footer {
+    flex: 0 0 5em;
+    color: var(--base-color);
+    background-color: var(--head-color);
+}
+
+@media screen and (min-width: 600px) {
+    body {
+        min-height: 100vh;
+    }
+    main {
+        position: relative; /* относительное зацепить floating-text */
+        flex-direction: row;
+        min-height: 100%;
+        flex: 1 1 auto;
+    }
+    nav { /*тег*/
+        flex: 2 2 6em;
+        max-width: 150px;
+    }
+}
+
+/** стили для надписей **/
+
+.note {
+    font-style: italic;
+    font-size: x-small;
+    color: var(--note-color);
+    transition: color 0.3s ease;
+}
+.note:hover {
+    color: var(--base-color);
+}
+
+.floating-text {
+    position: absolute; /* Абсолютное позиционирование для плавающего текста */
+    align-self: center;
+    background-color: rgba(217, 127, 127, 0.3); /* с прозрачностью */
+    padding: 2px;
+    border-radius: 2px;
+    z-index: 10; /* текст находится выше других элементов */
+}
+
+nav a {
+    margin: 0 25px;
+    text-decoration: none;
+
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+nav a:hover {
+    color: var(--hover-color);
+    transition: color 0.7s ease;
+
+}
+
+/* ну и до кучи немного флексанём */
+.flex-container {
+    display: flex;
+    justify-content: space-around;
+    margin: 10px;
+}
+.flex-item {
+    _color: white;
+    padding: 20px;
+    margin: 10px;
+    border-radius: 10px;
+    flex-grow: 1;
+    text-align: center;
+    transition: all 100ms linear;
+}
+.flex-item:hover {
+    box-shadow: 1px 1px 8px 1px var(--border-color);
+    color: var(--hover-color);
+    transition: all 0.8s linear;
+}
+.flex-img {
+    flex-grow: 1;
+    text-align: center;
+}
