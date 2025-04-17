@@ -1,5 +1,6 @@
 FROM python:3.12
 
+COPY ./req.txt /8-flask/req.txt
 RUN pip install -r ./req.txt
 
 WORKDIR /8-flask
