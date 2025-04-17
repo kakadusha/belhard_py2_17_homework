@@ -1,6 +1,6 @@
-FROM python:3.8
+FROM python:3.12
 
-RUN pip install flask requests gunicorn flask_sqlalhemy
+RUN pip install -r ./req.txt
 
 WORKDIR /8-flask
 
