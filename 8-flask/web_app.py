@@ -136,7 +136,12 @@ def view_painting():
         # shuffle(answers)
 
         return render_template(
-            "painting.html", answers=answers, question=painting, html_config=html_config
+            "painting.html",
+            answers=answers,
+            question=painting,
+            html_config=html_config,
+            image=url_for("static", filename=f"pic-art/{answers[0]}"),
+            desc=answers[1],
         )
 
 

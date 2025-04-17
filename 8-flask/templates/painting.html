@@ -14,11 +14,15 @@
 
 
 {% block content %}
-<div class="quiz_form">
+<article>
 
     <h2>{{question.question}}</h2>
 
     <form action="/painting/" method="post">
+        <img src="{{ image }}">
+        <p></p>
+        <h5 style="text-align: right;">{{ desc }}</h5>
+        <br>
         <label for="ans1"></label>
         {% for answer in answers%}
         <div class="anwer_row">
@@ -26,11 +30,13 @@
             <label for="radio{{ loop.index }}">{{ answer }}</label>
         </div>
         {% endfor %}
-        <input class="button" type="submit" value="Ответить">
+        <br>
+        <input class="button" type="submit" style="border-radius: 2;" value="Смотреть дальше">
+        <input class="button" type="submit" style="border-radius: 2;" value="Назад">
 
     </form>
 
 
-</div>
+</article>
 
 {% endblock %}
