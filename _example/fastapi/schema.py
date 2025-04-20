@@ -1,20 +1,16 @@
 from pydantic import BaseModel, ConfigDict
 
-
-class DataClassUserAdd(BaseModel):
+class UserAdd(BaseModel):
     name: str
     age: int
     phone: str | None = None
-
-
-class DataClassUserGet(DataClassUserAdd):
-    # ? не очень понятно почему он от DataClassUserAdd а не от BaseModel...
+    
+class User(UserAdd):
     id: int
     model_config = ConfigDict(from_attributes=True)
-
-
-class DataClassUserId(BaseModel):
+    
+class UserId(BaseModel):
     id: int
+    
+# class Quiz    
 
-
-# class Quiz
