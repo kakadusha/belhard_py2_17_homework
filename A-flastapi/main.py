@@ -1,4 +1,14 @@
-# pip install fastapi,  uvicorn, pydantic, aiosqlite, sqlalchemy
+# pip install fastapi,  uvicorn, pydantic, aiosqlite, sqlalchemy'''
+"""
+Доделать в проекте FastAPI следующие ендпоинты:
+
+    - /quizes - get, post           /galleries      [get] [post]
+    - /quizes/id - get              /galleries/id   [get]
+
+    - /questions - get, post        /pictires       [get] [post]
+    - /questions/id - get           /pictires/id    [get]
+
+"""
 
 from fastapi import FastAPI
 from routers import users_router, default_router
@@ -15,11 +25,12 @@ BASE_DIR = os.path.dirname(__file__)
 async def lifespan(app: FastAPI):
     await create_table()
     await add_test_data()
-    print("------Bases build-------------")
+    print("------ Tables built -------------")
 
     yield
+
     await delete_table()
-    print("-------------Bases drooped------------")
+    print("------ Tables dropped -----------")
 
 
 app = FastAPI(lifespan=lifespan)
@@ -29,8 +40,8 @@ app.include_router(users_router)
 
 
 if __name__ == "__main__":
-    uvicorn.run("main2:app", reload=True, port=8200)
-    # uvicorn.run ("other_folder.main2:app", reload=True, port=8500)
+    uvicorn.run("main:app", reload=True, port=8200)
+    # uvicorn.run ("other_folder.main:app", reload=True, port=8500)
 
 
-# uvicorn main2:app --host 0.0.0.0 --port 8000 --reload
+# uvicorn main:app --host 0.0.0.0 --port 8000 --reload
