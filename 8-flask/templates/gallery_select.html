@@ -23,14 +23,14 @@
 
 {% block content %}
 <article>
-    <form action="/select-galery/" method="post">
+    <form action="/select-gallery/" method="post">
         <div class="form1">
             <h2>Выберите Галерею</h2>
             <div class="gallery-buttons">
                 {% for q in quizes %}
                 <div class="flex-item">
-                    <input type="submit" id="galery-{{ q.id }}" name="galery" value="{{ q.id }}" style="display: none;">
-                    <label for="galery-{{ q.id }}">
+                    <input type="submit" id="gallery-{{ q.id }}" name="gallery" value="{{ q.id }}" style="display: none;">
+                    <label for="gallery-{{ q.id }}">
                         <h5>{{ q.name }}</h4>
                     </label>
 

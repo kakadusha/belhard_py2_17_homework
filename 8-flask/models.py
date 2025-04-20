@@ -10,7 +10,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(25))
     quizes = db.relationship(
-        "Galery", backref="user", cascade="all, delete, delete-orphan"
+        "Gallery", backref="user", cascade="all, delete, delete-orphan"
     )
 
     def __init__(self, name) -> None:
@@ -22,16 +22,16 @@ class User(db.Model):
 
 
 # many_to_many
-galery_painting = db.Table(
-    "galery_painting",
-    db.Column("quiz_id", db.Integer, db.ForeignKey("galery.id"), primary_key=True),
+gallery_painting = db.Table(
+    "gallery_painting",
+    db.Column("quiz_id", db.Integer, db.ForeignKey("gallery.id"), primary_key=True),
     db.Column(
         "question_id", db.Integer, db.ForeignKey("painting.id"), primary_key=True
     ),
 )
 
 
-class Galery(db.Model):
+class Gallery(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
@@ -53,8 +53,8 @@ class Painting(db.Model):
     wrong1 = db.Column(db.String(100), nullable=False)
     wrong2 = db.Column(db.String(100), nullable=False)
     wrong3 = db.Column(db.String(100), nullable=False)
-    # Эта строка устанавливает двустороннюю связь между Painting и Galery. Вы можете получить список тестов, связанных с вопросом, через question_instance.quiz, и список вопросов, связанных с тестом, через quiz_instance.question.  backref делает код более чистым и удобным в использовании, избегая сложных запросов к базе данных
-    galery = db.relationship("Galery", secondary=galery_painting, backref="painting")
+    # Эта строка устанавливает двустороннюю связь между Painting и Gallery. Вы можете получить список тестов, связанных с вопросом, через question_instance.quiz, и список вопросов, связанных с тестом, через quiz_instance.question.  backref делает код более чистым и удобным в использовании, избегая сложных запросов к базе данных
+    gallery = db.relationship("Gallery", secondary=gallery_painting, backref="painting")
 
     def __init__(self, question: str, answer, wrong1, wrong2, wrong3) -> None:
         super().__init__()
@@ -76,12 +76,12 @@ def db_add_new_data():
     user2 = User(name="User2")
 
     gals = [
-        Galery("Небо", user1),
-        Galery("Птицы", user1),
-        Galery("Цветы", user2),
-        Galery("Миниатюры", user2),
-        Galery("Животные", user2),
-        Galery("Другое", user2),
+        Gallery("Небо", user1),
+        Gallery("Птицы", user1),
+        Gallery("Цветы", user2),
+        Gallery("Миниатюры", user2),
+        Gallery("Животные", user2),
+        Gallery("Другое", user2),
     ]
 
     paintings = [

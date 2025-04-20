@@ -67,8 +67,8 @@ async def delete_table():
 async def add_test_data():
     async with new_session() as session:
         users = [
-            UserOrm(name="user1", age=20),
-            UserOrm(name="user2", age=30, phone="123456789"),
+            UserOrm(name="testuser1", age=20),
+            UserOrm(name="testuser2", age=30, phone="123456789"),
         ]
 
         session.add_all(users)

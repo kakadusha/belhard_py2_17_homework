@@ -30,14 +30,14 @@ from flask import Flask, render_template, redirect, url_for, request, session
 import os
 
 from duck_fox import get_random_duck_and_its_number, get_foxy_urls
-from models import db, User, Painting, Galery, db_add_new_data
+from models import db, User, Painting, Gallery, db_add_new_data
 
-# from models import db, User, Painting, Galery, db_add_new_data
+# from models import db, User, Painting, Gallery, db_add_new_data
 
 
 # BASE_DIR = os.path.dirname(__name__)  # так работает если проект открыт из любого места
 BASE_DIR = os.path.dirname(__file__)  # получаем тут абсолютный путь
-DB_PATH = os.path.join(BASE_DIR, "db", "galery.db")
+DB_PATH = os.path.join(BASE_DIR, "db", "gallery.db")
 
 MAX_FOX_CNT = 124  # максимальное количество лисиц на randomfox.ca
 
@@ -89,16 +89,16 @@ def fox(num):
     )
 
 
-@app.route("/select-galery/", methods=["POST", "GET"])
-def view_galery():
+@app.route("/select-gallery/", methods=["POST", "GET"])
+def view_gallery():
     if request.method == "GET":
-        session["galery_id"] = -1
-        quizes = Galery.query.all()
+        session["gallery_id"] = -1
+        quizes = Gallery.query.all()
         # print(quizes)
         return render_template(
-            "galery_select.html", quizes=quizes, html_config=html_config
+            "gallery_select.html", quizes=quizes, html_config=html_config
         )
-    session["galery_id"] = request.form.get("galery")
+    session["gallery_id"] = request.form.get("gallery")
     session["painting_n"] = 0
     session["question_id"] = 0
     session["right_answers"] = 0
@@ -109,8 +109,8 @@ def view_galery():
 def view_painting():
 
     # если квиз еще не выбран - перенаправляем на выбор
-    if not session["galery_id"] or session["galery_id"] == -1:
-        return redirect(url_for("view_galery"))
+    if not session["gallery_id"] or session["gallery_id"] == -1:
+        return redirect(url_for("view_gallery"))
 
     # если пост значит пришел ответ на вопрос
     if request.method == "POST":
@@ -121,16 +121,16 @@ def view_painting():
         # следующий вопрос
         session["painting_n"] += 1
 
-    galery = Galery.query.filter_by(id=session["galery_id"]).one()
+    gallery = Gallery.query.filter_by(id=session["gallery_id"]).one()
 
     # если вопросы закончились
-    if int(session["painting_n"]) >= len(galery.painting):
-        session["galery_id"] = -1  # чтобы больше не работала страница question
+    if int(session["painting_n"]) >= len(gallery.painting):
+        session["gallery_id"] = -1  # чтобы больше не работала страница question
         return redirect(url_for("view_result"))
 
     # если вопросы еще не закончились
     else:
-        painting = galery.painting[session["painting_n"]]
+        painting = gallery.painting[session["painting_n"]]
         session["question_id"] = painting.id
         answers = [painting.answer, painting.wrong1, painting.wrong2, painting.wrong3]
         # shuffle(answers)
@@ -152,7 +152,7 @@ def view_result():
         right=session["right_answers"],
         total=session["painting_n"],
         html_config=html_config,
-        url=url_for("view_galery"),
+        url=url_for("view_gallery"),
     )
 
 
