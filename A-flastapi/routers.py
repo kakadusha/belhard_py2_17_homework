@@ -1,6 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from schema import *
-from database import UserRepository, GalleryRepository, PaintingRepository
+from database import UserRepository, GalleryRepository, PaintingRepository, GalleryOrm
+from database import new_session
+from sqlalchemy.orm import selectinload
+from sqlalchemy.future import select
 
 ######### default_router ##########
 
@@ -54,12 +57,28 @@ async def get_galleries() -> list[DataClassGalleryGet]:
     return list(map(DataClassGalleryGet.model_validate, galleries))
 
 
+# не работает, падает потому что не может загрузить
+# is not bound to a Session; lazy load operation of attribute 'paintings'
+# cannot proceed (Background on this error at: https://sqlalche.me/e/20/bhk3)"
 @gallery_router.get("/{id}")
-async def get_gallery(id) -> DataClassGalleryGet:
-    gallery = await GalleryRepository.get_gallery(id=id)
-    if gallery:
-        return DataClassGalleryGet.model_validate(gallery)
-    # return {'err':"User not found"} # но тогда get_user(id) -> User | dict[str,str]
+async def get_gallery(id):
+    async with new_session() as session:
+        gallery = await session.get(GalleryOrm, id)
+        if gallery:
+            return gallery
+            # return DataClassGalleryGet.model_validate(gallery)
+    raise HTTPException(status_code=404, detail="Gallery not found")
+
+
+@gallery_router.get("/{gallery_id}/paintings")
+async def get_gallery_with_paintings(gallery_id: int):
+    async with new_session() as session:
+        gallery = await session.execute(
+            select(GalleryOrm)
+            .options(selectinload(GalleryOrm.paintings))
+            .where(GalleryOrm.id == gallery_id)
+        )
+        return gallery.scalar_one_or_none()
     raise HTTPException(status_code=404, detail="Gallery not found")
 
 
@@ -88,7 +107,6 @@ async def get_painting(id) -> DataClassPaintingGet:
     painting = await PaintingRepository.get_painting(id=id)
     if painting:
         return DataClassPaintingGet.model_validate(painting)
-    # return {'err':"User not found"} # но тогда get_user(id) -> User | dict[str,str]
     raise HTTPException(status_code=404, detail="Painting not found")
 
 
