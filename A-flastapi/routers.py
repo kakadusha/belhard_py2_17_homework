@@ -77,10 +77,10 @@ painting_router = APIRouter(
 )
 
 
-# @painting_router.get("")
-# async def get_paintings() -> list[DataClassPaintingGet]:
-#     paintings = await PaintingRepository.get_paintings()
-#     return list(map(DataClassPaintingGet.model_validate, paintings))
+@painting_router.get("")
+async def get_paintings() -> list[DataClassPaintingGet]:
+    paintings = await PaintingRepository.get_paintings()
+    return list(map(DataClassPaintingGet.model_validate, paintings))
 
 
 @painting_router.get("/{id}")

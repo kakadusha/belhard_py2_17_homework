@@ -147,6 +147,15 @@ class PaintingRepository:
             painting = res.scalars().first()
             return painting
 
+    @classmethod
+    async def get_paintings(cls) -> list[PaintingOrm]:
+        async with new_session() as session:
+            query = select(PaintingOrm)
+            res = await session.execute(query)
+            paintings = res.scalars().all()
+            # return list
+            return list(paintings)
+
 
 class GalleryRepository:
     """Все про галерею C R U D"""

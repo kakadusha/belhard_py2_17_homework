@@ -46,5 +46,5 @@ class DataClassGalleryAdd(BaseModel):
 
 class DataClassGalleryGet(DataClassGalleryAdd):
     id: int
-    paintings: list[DataClassPaintingAdd] | None = None
+    paintings: list[int] | None = None
     model_config = ConfigDict(from_attributes=True)
