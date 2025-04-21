@@ -51,7 +51,7 @@ class UserOrm(Model):
     name: Mapped[str]
     age: Mapped[int]
     phone: Mapped[str | None]
-    # quiz = relationship('QuizOrm', backref='user')
+    # quizes = relationship('QuizOrm', backref='user')
 
 
 async def create_table():

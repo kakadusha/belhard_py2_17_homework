@@ -17,4 +17,12 @@ class DataClassUserId(BaseModel):
     id: int
 
 
-# class Quiz
+class DataClassPaintingAdd(BaseModel):
+    name: str
+    image: str
+    size: str
+    material: str
+    technique: str
+    desc: str
+    price: str
+    status: str

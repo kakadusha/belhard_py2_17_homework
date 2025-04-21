@@ -14,7 +14,7 @@ from fastapi import FastAPI
 from routers import users_router, default_router
 import uvicorn
 from contextlib import asynccontextmanager
-from database import create_table, delete_table, add_test_data
+from database import create_tables, delete_tables, add_test_data
 
 import os
 
@@ -23,13 +23,13 @@ BASE_DIR = os.path.dirname(__file__)
 
 @asynccontextmanager  # реагирует на  методы __aenter__() и __aexit__()
 async def lifespan(app: FastAPI):
-    await create_table()
+    await create_tables()
     await add_test_data()
     print("------ Tables built -------------")
 
     yield
 
-    await delete_table()
+    await delete_tables()
     print("------ Tables dropped -----------")
 
 
