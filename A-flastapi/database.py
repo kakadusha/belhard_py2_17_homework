@@ -34,7 +34,6 @@ class UserOrm(Model):
     name: Mapped[str]
     age: Mapped[int]
     phone: Mapped[str | None]
-    # quiz = relationship('QuizOrm', backref='user')
     galleries = relationship(
         "GalleryOrm", backref="user", cascade="all, delete, delete-orphan"
     )
@@ -63,11 +62,9 @@ class PaintingOrm(Model):
     desc: Mapped[str]
     price: Mapped[str]
     status: Mapped[str]
-    # gallery = relationship(
-    #     "GalleryOrm", secondary=gallery_painting, backref="paintings"
-    # )
     # Установите связь с GalleryOrm
-    galleries: Mapped[list[GalleryOrm]] = relationship(
+    # galleries: Mapped[list[GalleryOrm]] = relationship(
+    galleries = relationship(
         "GalleryOrm", secondary=gallery_painting, back_populates="paintings"
     )
 
@@ -79,6 +76,11 @@ class GalleryOrm(Model):
     __tablename__ = "gallery"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
+    desc: Mapped[str | None] = mapped_column(default=None)
+    created_at: Mapped[datetime] = mapped_column(default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        default=func.now(), onupdate=func.now()
+    )
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     # RE: painting = []
     # Определите связь с PaintingOrm
@@ -146,6 +148,38 @@ class PaintingRepository:
             return painting
 
 
+class GalleryRepository:
+    """Все про галерею C R U D"""
+
+    @classmethod
+    async def add_gallery(cls, gallery: DataClassGalleryAdd) -> int:
+        async with new_session() as session:
+            data = gallery.model_dump()
+            print(data)
+            gallery_orm = GalleryOrm(**data)
+            session.add(gallery_orm)
+            await session.flush()
+            await session.commit()
+            return gallery_orm.id
+
+    @classmethod
+    async def get_gallery(cls, id) -> GalleryOrm | None:
+        async with new_session() as session:
+            query = select(GalleryOrm).filter(GalleryOrm.id == id)
+            res = await session.execute(query)
+            gallery = res.scalars().first()
+            return gallery
+
+    @classmethod
+    async def get_galleries(cls) -> list[GalleryOrm]:
+        async with new_session() as session:
+            query = select(GalleryOrm)
+            res = await session.execute(query)
+            galleries = res.scalars().all()
+            # return list
+            return list(galleries)
+
+
 #### functions #####
 
 
@@ -171,38 +205,36 @@ async def add_test_data():
             PaintingOrm(
                 name="testpainting1",
                 image="testimage1",
-                size="testsize1",
-                material="testmaterial1",
-                technique="testtechnique1",
+                size="100x100",
+                material="oil",
+                technique="canvas",
                 desc="testdesc1",
-                price="testprice1",
-                status="teststatus1",
+                price="1000",
+                status="available",
             ),
             PaintingOrm(
                 name="testpainting2",
                 image="testimage2",
-                size="testsize2",
-                material="testmaterial2",
-                technique="testtechnique2",
+                size="200x200",
+                material="watercolor",
+                technique="paper",
                 desc="testdesc2",
-                price="testprice2",
-                status="teststatus2",
+                price="2000",
+                status="sold",
             ),
         ]
         session.add_all(paintings)
+        # Сохраняем изменения для получения ID пользователей и картин
+        await session.commit()
 
+        # Создаем галереи и устанавливаем связи с картинами
         galleries = [
-            GalleryOrm(name="testgallery1", user_id=1),
-            GalleryOrm(name="testgallery2", user_id=2),
+            GalleryOrm(
+                name="testgallery1", user_id=1, paintings=[paintings[0], paintings[1]]
+            ),
+            GalleryOrm(name="testgallery2", user_id=2, paintings=[paintings[1]]),
         ]
         session.add_all(galleries)
-
-        # gallery_painting = [
-        #     GalleryPaintingOrm(gallery_id=1, painting_id=1),
-        #     GalleryPaintingOrm(gallery_id=1, painting_id=2),
-        #     GalleryPaintingOrm(gallery_id=2, painting_id=1),
-        # ]
-        # session.add_all(gallery_painting)
-
+        # Сохраняем изменения
         await session.flush()
         await session.commit()

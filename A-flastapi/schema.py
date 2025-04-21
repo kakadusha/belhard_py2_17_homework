@@ -8,13 +8,15 @@ class DataClassUserAdd(BaseModel):
 
 
 class DataClassUserGet(DataClassUserAdd):
-    # ? не очень понятно почему он от DataClassUserAdd а не от BaseModel...
     id: int
     model_config = ConfigDict(from_attributes=True)
 
 
 class DataClassUserId(BaseModel):
     id: int
+
+
+### Painting
 
 
 class DataClassPaintingAdd(BaseModel):
@@ -25,4 +27,24 @@ class DataClassPaintingAdd(BaseModel):
     technique: str
     desc: str
     price: str
-    status: str
+    status: str | None = None
+
+
+class DataClassPaintingGet(DataClassPaintingAdd):
+    id: int
+    model_config = ConfigDict(from_attributes=True)
+
+
+### Gallery
+
+
+class DataClassGalleryAdd(BaseModel):
+    name: str
+    user_id: int
+    desc: str | None = None
+
+
+class DataClassGalleryGet(DataClassGalleryAdd):
+    id: int
+    paintings: list[DataClassPaintingAdd] | None = None
+    model_config = ConfigDict(from_attributes=True)

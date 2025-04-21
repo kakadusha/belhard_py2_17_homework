@@ -11,7 +11,7 @@
 """
 
 from fastapi import FastAPI
-from routers import users_router, default_router
+from routers import users_router, default_router, gallery_router, painting_router
 import uvicorn
 from contextlib import asynccontextmanager
 from database import create_tables, delete_tables, add_test_data
@@ -37,6 +37,8 @@ app = FastAPI(lifespan=lifespan)
 
 app.include_router(default_router)
 app.include_router(users_router)
+app.include_router(gallery_router)
+app.include_router(painting_router)
 
 
 if __name__ == "__main__":
