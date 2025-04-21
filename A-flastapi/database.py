@@ -16,30 +16,11 @@ if not os.path.exists(DB_DIR):
 DB_PATH = os.path.join(DB_DIR, "fastapi.db")
 
 engine = create_async_engine(f"sqlite+aiosqlite:///{DB_PATH}")
-# engine = create_async_engine("sqlite+aiosqlite:///example//fastapi//db//fastapi.db")
-# engine = create_async_engine("sqlite+aiosqlite:///db//fastapi.db")
 new_session = async_sessionmaker(engine, expire_on_commit=False)
 
 
 class Model(DeclarativeBase):
     pass
-
-
-#    # можно тут добавить тогда эти столбцы будут во всех таблицах
-#    # т.к. мы наследуемся от этого класса
-
-#     id: Mapped[int] = mapped_column(primary_key=True)
-
-#     # будет вписывать дататайм при создании записи
-#     dateCreate: Mapped[datetime] = mapped_column(
-#                                         server_default=func.now(),
-#                                         nullable=False)
-
-#     # будет вписывать дататайм при обновлении записи
-#     dateUpdate: Mapped[datetime] = mapped_column(
-#                                         server_default=func.now(),
-#                                         server_onupdate=func.now(),
-#                                         nullable=False)
 
 
 ##### USER #####
@@ -62,16 +43,10 @@ class UserOrm(Model):
 # many_to_many
 gallery_painting = Table(
     "gallery_painting",
+    Model.metadata,
     Column("gallery_id", Integer, ForeignKey("gallery.id"), primary_key=True),
     Column("painting_id", Integer, ForeignKey("painting.id"), primary_key=True),
 )
-# class GalleryPaintingOrm(Model):
-#     __tablename__ = "gallery_painting"
-#     # id: Mapped[int] = mapped_column(primary_key=True)
-#     gallery_id: Mapped[int] = mapped_column(ForeignKey("gallery.id"), primary_key=True)
-#     painting_id: Mapped[int] = mapped_column(
-#         ForeignKey("painting.id"), primary_key=True
-#     )
 
 
 ##### PAINTING #####
@@ -88,13 +63,13 @@ class PaintingOrm(Model):
     desc: Mapped[str]
     price: Mapped[str]
     status: Mapped[str]
-    # Эта строка устанавливает двустороннюю связь между Painting и Gallery.
-    # Вы можете получить список тестов, связанных с вопросом, через question_instance.quiz,
-    # и список вопросов, связанных с тестом, через quiz_instance.question.
-    # backref делает код более чистым и удобным в использовании, избегая сложных запросов к базе данных
-    # RE
-    # gallery = db.relationship("Gallery", secondary=gallery_painting, backref="painting")
-    gallery = relationship("GalleryOrm", secondary=gallery_painting, backref="painting")
+    # gallery = relationship(
+    #     "GalleryOrm", secondary=gallery_painting, backref="paintings"
+    # )
+    # Установите связь с GalleryOrm
+    galleries: Mapped[list[GalleryOrm]] = relationship(
+        "GalleryOrm", secondary=gallery_painting, back_populates="paintings"
+    )
 
 
 ##### GALLERY #####
@@ -106,15 +81,10 @@ class GalleryOrm(Model):
     name: Mapped[str]
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     # RE: painting = []
-
-    # we need here list of PaintingOrm
-    # paintings: Mapped[list[PaintingOrm]] = relationship(
-    #     "PaintingOrm",
-    #     secondary="gallery_painting",
-    #     backref="galleries",
-    #     # cascade="all, delete, delete-orphan",  # орфана раньше не было
-    # )
-    painting: Mapped[list[PaintingOrm]]
+    # Определите связь с PaintingOrm
+    paintings: Mapped[list[PaintingOrm]] = relationship(
+        "PaintingOrm", secondary=gallery_painting, back_populates="galleries"
+    )
 
 
 #### REPOS ####
