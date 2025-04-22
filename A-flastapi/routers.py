@@ -23,25 +23,25 @@ users_router = APIRouter(
 
 
 @users_router.get("")
-async def get_users() -> list[DataClassUserGet]:
+async def get_users() -> list[pdUserGet]:
     users = await UserRepository.get_users()
-    return list(map(DataClassUserGet.model_validate, users))
+    return list(map(pdUserGet.model_validate, users))
 
 
 @users_router.get("/{id}")
-async def get_user(id) -> DataClassUserGet:
+async def get_user(id) -> pdUserGet:
     user = await UserRepository.get_user(id=id)
     if user:
-        return DataClassUserGet.model_validate(user)
+        return pdUserGet.model_validate(user)
     # return {'err':"User not found"} # но тогда get_user(id) -> User | dict[str,str]
     raise HTTPException(status_code=404, detail="User not found")
 
 
 @users_router.post("")
-async def post_user(user: DataClassUserAdd = Depends()) -> DataClassUserId:
+async def post_user(user: pdUserAdd = Depends()) -> pdUserId:
     id = await UserRepository.add_user(user)
     # return {"id": id}
-    return DataClassUserId(id=id)
+    return pdUserId(id=id)
 
 
 ######### gallery_router ##########
@@ -52,9 +52,9 @@ gallery_router = APIRouter(
 
 
 @gallery_router.get("")
-async def get_galleries() -> list[DataClassGalleryGet]:
+async def get_galleries() -> list[pdGalleryList]:
     galleries = await GalleryRepository.get_galleries()
-    return list(map(DataClassGalleryGet.model_validate, galleries))
+    return list(map(pdGalleryList.model_validate, galleries))
 
 
 # не работает, падает потому что не может загрузить
@@ -83,10 +83,10 @@ async def get_gallery_with_paintings(gallery_id: int):
 
 
 @gallery_router.post("")
-async def post_gallery(gallery: DataClassGalleryAdd = Depends()) -> DataClassGalleryGet:
+async def post_gallery(gallery: pdGalleryAdd = Depends()) -> pdGalleryGet:
     id = await GalleryRepository.add_gallery(gallery)
     # return {"id": id}
-    return DataClassGalleryGet(id=id, **gallery.model_dump())
+    return pdGalleryGet(id=id, **gallery.model_dump())
 
 
 ######### painting_router ##########
@@ -97,23 +97,23 @@ painting_router = APIRouter(
 
 
 @painting_router.get("")
-async def get_paintings() -> list[DataClassPaintingGet]:
+async def get_paintings() -> list[pdPaintingGet]:
     paintings = await PaintingRepository.get_paintings()
-    return list(map(DataClassPaintingGet.model_validate, paintings))
+    return list(map(pdPaintingGet.model_validate, paintings))
 
 
 @painting_router.get("/{id}")
-async def get_painting(id) -> DataClassPaintingGet:
+async def get_painting(id) -> pdPaintingGet:
     painting = await PaintingRepository.get_painting(id=id)
     if painting:
-        return DataClassPaintingGet.model_validate(painting)
+        return pdPaintingGet.model_validate(painting)
     raise HTTPException(status_code=404, detail="Painting not found")
 
 
 @painting_router.post("")
 async def post_painting(
-    painting: DataClassPaintingAdd = Depends(),
-) -> DataClassPaintingGet:
+    painting: pdPaintingAdd = Depends(),
+) -> pdPaintingGet:
     id = await PaintingRepository.add_painting(painting)
     # return {"id": id}
-    return DataClassPaintingGet(id=id, **painting.model_dump())
+    return pdPaintingGet(id=id, **painting.model_dump())

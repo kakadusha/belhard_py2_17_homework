@@ -96,7 +96,7 @@ class UserRepository:
     """Все про юзера C R U D"""
 
     @classmethod
-    async def add_user(cls, user: DataClassUserAdd) -> int:
+    async def add_user(cls, user: pdUserAdd) -> int:
         async with new_session() as session:
             data = user.model_dump()
             print(data)
@@ -129,7 +129,7 @@ class PaintingRepository:
     """Все про картину C R U D"""
 
     @classmethod
-    async def add_painting(cls, painting: DataClassPaintingAdd) -> int:
+    async def add_painting(cls, painting: pdPaintingAdd) -> int:
         async with new_session() as session:
             data = painting.model_dump()
             print(data)
@@ -161,7 +161,7 @@ class GalleryRepository:
     """Все про галерею C R U D"""
 
     @classmethod
-    async def add_gallery(cls, gallery: DataClassGalleryAdd) -> int:
+    async def add_gallery(cls, gallery: pdGalleryAdd) -> int:
         async with new_session() as session:
             data = gallery.model_dump()
             print(data)
