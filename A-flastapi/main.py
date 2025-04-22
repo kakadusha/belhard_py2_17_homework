@@ -2,11 +2,11 @@
 """
 Доделать в проекте FastAPI следующие ендпоинты:
 
-    - /quizes - get, post           /galleries      [get] [post]
-    - /quizes/id - get              /galleries/id   [get]
+    - /quizes - get, post           /gallery      [get] [post]
+    - /quizes/id - get              /gallery/id   [get]
 
-    - /questions - get, post        /pictires       [get] [post]
-    - /questions/id - get           /pictires/id    [get]
+    - /questions - get, post        /painting       [get] [post]
+    - /questions/id - get           /painting/id    [get]
 
 """
 
