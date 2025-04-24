@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from schema import *
-from database import UserRepository, GalleryRepository, PaintingRepository, GalleryOrm
-from database import new_session
+from database import UserRepository, GalleryRepository, PaintingRepository
 
 ######### default_router ##########
 
