@@ -1,6 +1,15 @@
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import (
+    DeclarativeBase,
+    Mapped,
+    mapped_column,
+    relationship,
+    selectinload,
+)
 from sqlalchemy import select, Integer, ForeignKey, String, Table, Column, func
+from sqlalchemy.future import select
+from typing import List
+
 from datetime import datetime
 
 from schema import *
@@ -178,6 +187,13 @@ class GalleryRepository:
             res = await session.execute(query)
             gallery = res.scalars().first()
             return gallery
+        raise HTTPException(status_code=404, detail="Gallery not found")
+
+    # async with new_session() as session:
+    #     gallery = await session.get(GalleryOrm, id)
+    #     if gallery:
+    #         return gallery
+    #         # return DataClassGalleryGet.model_validate(gallery)
 
     @classmethod
     async def get_galleries(cls) -> list[GalleryOrm]:
@@ -187,6 +203,17 @@ class GalleryRepository:
             galleries = res.scalars().all()
             # return list
             return list(galleries)
+
+    @classmethod
+    async def get_gallery_with_paintings(cls, gallery_id) -> GalleryOrm | None:
+        async with new_session() as session:
+            gallery = await session.execute(
+                select(GalleryOrm)
+                .options(selectinload(GalleryOrm.paintings))
+                .where(GalleryOrm.id == gallery_id)
+            )
+            return gallery.scalar_one_or_none()
+        raise HTTPException(status_code=404, detail="Gallery not found")
 
 
 #### functions #####
