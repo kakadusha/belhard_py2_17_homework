@@ -159,38 +159,37 @@ def view_result():
 ### edit pages (adm part) ###
 
 
-@app.route("/quizes_view/", methods=["POST", "GET"])
-def view_quiz_edit():
+@app.route("/edit/", methods=["POST", "GET"])
+def edit():
     if request.method == "POST":
-        quiz = request.form.get("quiz")
-        if quiz and len(quiz) > 3:
+        gallery = request.form.get("gallery")
+        if gallery and len(gallery) > 3:
             user = User.query.all()
-            # print(11111111111111, user)
-            quiz = Quiz(quiz, user[0])
-            db.session.add(quiz)
+            gallery = Gallery(gallery, user[0])
+            db.session.add(gallery)
             db.session.commit()
         else:
-            question = request.form.get("question")
+            painting = request.form.get("painting") or ""
             answer = request.form.get("answer")
             wrong1 = request.form.get("wrong1")
             wrong2 = request.form.get("wrong2")
             wrong3 = request.form.get("wrong3")
-            if all([question, answer, wrong1, wrong2, wrong3]):
-                q = Question(question, answer, wrong1, wrong2, wrong3)
+            if all([painting, answer, wrong1, wrong2, wrong3]):
+                q = Painting(painting, answer, wrong1, wrong2, wrong3)
                 db.session.add(q)
                 db.session.commit()
 
         return redirect(url_for("view_quiz_edit", qqq="123"))
 
-    quizes = Quiz.query.all()
+    galleries = Gallery.query.all()
     # quizes[0].name = 'qwqwqwq'
     # db.session.commit()
-    questions = Question.query.all()
+    paintings = Painting.query.all()
     return render_template(
-        "quizes_view.html",
+        "edit.html",
         html_config=html_config,
-        quizes=quizes,
-        questions=questions,
+        galleries=galleries,
+        paintings=paintings,
         len=len,
     )
 
