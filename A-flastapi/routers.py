@@ -2,8 +2,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from schema import *
 from database import UserRepository, GalleryRepository, PaintingRepository, GalleryOrm
 from database import new_session
-from sqlalchemy.orm import selectinload
-from sqlalchemy.future import select
 
 ######### default_router ##########
 
@@ -57,35 +55,25 @@ async def get_galleries() -> list[pdGalleryList]:
     return list(map(pdGalleryList.model_validate, galleries))
 
 
-# не работает, падает потому что не может загрузить
+# не работает c paintings, падает потому что не может загрузить
 # is not bound to a Session; lazy load operation of attribute 'paintings'
 # cannot proceed (Background on this error at: https://sqlalche.me/e/20/bhk3)"
-@gallery_router.get("/{id}")
-async def get_gallery(id):
-    async with new_session() as session:
-        gallery = await session.get(GalleryOrm, id)
-        if gallery:
-            return gallery
-            # return DataClassGalleryGet.model_validate(gallery)
-    raise HTTPException(status_code=404, detail="Gallery not found")
+@gallery_router.get("/{gallery_id}")
+async def get_gallery(gallery_id: int):
+    gallery = await GalleryRepository.get_gallery(gallery_id)
+    return gallery
 
 
+# реализован вложенный запрос
 @gallery_router.get("/{gallery_id}/paintings")
 async def get_gallery_with_paintings(gallery_id: int):
-    async with new_session() as session:
-        gallery = await session.execute(
-            select(GalleryOrm)
-            .options(selectinload(GalleryOrm.paintings))
-            .where(GalleryOrm.id == gallery_id)
-        )
-        return gallery.scalar_one_or_none()
-    raise HTTPException(status_code=404, detail="Gallery not found")
+    gallery = await GalleryRepository.get_gallery_with_paintings(gallery_id)
+    return gallery
 
 
 @gallery_router.post("")
 async def post_gallery(gallery: pdGalleryAdd = Depends()) -> pdGalleryGet:
     id = await GalleryRepository.add_gallery(gallery)
-    # return {"id": id}
     return pdGalleryGet(id=id, **gallery.model_dump())
 
 
