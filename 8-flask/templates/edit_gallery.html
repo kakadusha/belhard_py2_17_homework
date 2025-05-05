@@ -21,7 +21,7 @@
             <p>Отметьте вопрос чтобы его исключить из КВИЗА</p>
 
             {% set questions, checkbox, n_tab = quiz.question, True, 1  %}
-            {% include 'form_questions_tab.html' %}
+            {% include 'form_paintings_tab.html' %}
 
         </fieldset>
         <fieldset>
@@ -29,7 +29,7 @@
             <p>Отметьте вопрос чтобы его включить в КВИЗ</p>
             {% set questions, checkbox, n_tab = no_questions, True, 2 %}
 
-            {% include 'form_questions_tab.html' %}
+            {% include 'form_paintings_tab.html' %}
         </fieldset>
         <div>
             <a class="button" href="/quizes_view">ОТМЕНА</a>
