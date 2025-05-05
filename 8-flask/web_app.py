@@ -182,8 +182,6 @@ def edit():
         return redirect(url_for("view_quiz_edit", qqq="123"))
 
     galleries = Gallery.query.all()
-    # quizes[0].name = 'qwqwqwq'
-    # db.session.commit()
     paintings = Painting.query.all()
     return render_template(
         "edit.html",

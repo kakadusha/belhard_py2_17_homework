@@ -1,16 +1,17 @@
-{% extends "base.html" %}
+{% extends "layout.html" %}
 
 {% block main_menu %}
     {{ super() }}
-    {% include 'quiz_menu.html' %}    
+    {% include 'gal_menu.html' %}
 {% endblock %}
 
-
-{% block content1_head %}
-    <h2>КВИЗЫ <a class="button" href="#modal1">+</a></h2>    
-{% endblock %}
-
-{% block content1 %}    
+{% block content %}
+<style>
+        .quiz_form{
+        height: 200px;
+    }
+</style>
+<article>
     <div class="quizes quiz_form">
         <div class="quiz-row quiz-hrow">
             <div class="quiz-col">№</div>
@@ -28,21 +29,12 @@
         {% endfor %}
     </div>
 
-
-    {% include 'modal_quiz_add.html' %}
-
-{% endblock %}
-
-{% block content2_head %}
-    <h2>Вопросы  <a class="button" href="#modal2">+</a></h2>
-{% endblock %}
-
-
-{% block content2 %}
-
+    {% include 'modal_add_gallery.html' %}
 
 <div class="questions quiz_form">
     {% include 'form_questions_tab.html' %}
 </div>
-{% include 'modal_question_add.html' %}    
+    {% include 'modal_add_painting.html' %}
+
+</article>
 {% endblock %}
