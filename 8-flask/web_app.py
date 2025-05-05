@@ -66,14 +66,18 @@ with app.app_context():
 
 @app.route("/")
 def index():
-    return render_template("default_page.html")
+    return render_template("default_page.html", html_config=html_config)
 
 
 @app.route("/duck/")
 def duck():
     (img_url, number) = get_random_duck_and_its_number()
     return render_template(
-        "duck.html", title=f"рандомная утка №{number}", img_url=img_url, number=number
+        "duck.html",
+        title=f"рандомная утка №{number}",
+        img_url=img_url,
+        number=number,
+        html_config=html_config,
     )
 
 
@@ -85,7 +89,11 @@ def fox(num):
 
     foxes = get_foxy_urls(num, MAX_FOX_CNT)
     return render_template(
-        "fox.html", title=f"Pандомная лиса, {num} штук", foxes=foxes, number=num
+        "fox.html",
+        title=f"Pандомная лиса, {num} штук",
+        foxes=foxes,
+        number=num,
+        html_config=html_config,
     )
 
 
@@ -93,16 +101,16 @@ def fox(num):
 def view_gallery():
     if request.method == "GET":
         session["gallery_id"] = -1
-        quizes = Gallery.query.all()
-        # print(quizes)
+        galleries = Gallery.query.all()
+        # print(galleries)
         return render_template(
-            "gallery_select.html", quizes=quizes, html_config=html_config
+            "gallery_select.html", galleries=galleries, html_config=html_config
         )
     session["gallery_id"] = request.form.get("gallery")
     session["painting_n"] = 0
     session["question_id"] = 0
     session["right_answers"] = 0
-    return redirect(url_for("view_painting"))
+    return redirect(url_for("painting"))
 
 
 @app.route("/painting/", methods=["POST", "GET"])
@@ -197,12 +205,18 @@ def edit():
 
 @app.route("/page1/")
 def page1():
-    return render_template("page1.html")
+    return render_template(
+        "page1.html",
+        html_config=html_config,
+    )
 
 
 @app.route("/page2/")
 def page2():
-    return render_template("page2.html")
+    return render_template(
+        "page2.html",
+        html_config=html_config,
+    )
 
 
 # Сработает если ошибка 404 - т.е. любой другой путь который выше не предусмотрен
