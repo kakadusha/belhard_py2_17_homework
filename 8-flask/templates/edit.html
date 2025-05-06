@@ -1,36 +1,138 @@
-{% extends "layout.html" %}
-
-
-{% block content %}
-<style>
-        .quiz_form{
-        height: 200px;
-    }
-</style>
 <article>
-    <div class="quizes quiz_form">
-        <div class="quiz-row quiz-hrow">
-            <div class="quiz-col">№</div>
-            <div class="quiz-col">Название</div>
-            <div class="quiz-col">Сколько вопросов</div>
-        </div>
-        {% for q in quizes %}
-        <a href="/quiz_edit/{{q.id}}">
-            <div class="quiz-row">
-                <div class="quiz-col">{{ loop.index+1 }}</div>
-                <div class="quiz-col">{{ q.name }}</div>
-                <div class="quiz-col">{{ len(q.question) }}</div>
-            </div>
-        </a>
+
+    <p>Редактирование</p>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 300px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+
+    <p>Галереи</p>
+    <ul>
+        {% for gallery in galleries %}
+        <li><a href="{{ url_for('edit', gallery_id=gallery.id) }}">{{ gallery.name }}</a></li>
         {% endfor %}
+    </ul>
+
+    <button onclick="document.getElementById('addGalleryModal').style.display='block'">Добавить галерею</button>
+    <button onclick="document.getElementById('delGalleryModal').style.display='block'">Удалить галерею</button>
+
+    <div id="addGalleryModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('addGalleryModal').style.display='none'">&times;</span>
+            <form method="post">
+                <input type="hidden" name="add_gallery" value="true">
+                <label for="gallery_name">Название:</label><br>
+                <input type="text" id="gallery_name" name="gallery_name"><br>
+                <label for="gallery_user_id">ID пользователя:</label><br>
+                <input type="text" id="gallery_user_id" name="gallery_user_id"><br>
+                <label for="gallery_desc">Описание:</label><br>
+                <textarea id="gallery_desc" name="gallery_desc"></textarea><br>
+                <input type="submit" value="Добавить">
+            </form>
+        </div>
     </div>
 
-    {% include 'modal_add_gallery.html' %}
 
-<div class="questions quiz_form">
-    {% include 'form_paintings_tab.html' %}
-</div>
-    {% include 'modal_add_painting.html' %}
+
+
+
+    <div id="delGalleryModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('delGalleryModal').style.display='none'">&times;</span>
+            <ul>
+                {% for gallery in galleries %}
+                <li>
+                    <a href="#" onclick="deleteGallery({{ gallery.id }})">Удалить {{ gallery.name }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <script>
+        function deleteGallery(galleryId) {
+            if (true) {
+                fetch('/gallery_delete/'+galleryId, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token() }}'  // если используете CSRF защиту
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Галерея удалена');
+                        location.reload();
+                    } else {
+                        alert('Ошибка при удалении галереи');
+                    }
+                })
+                .catch(error => console.error('Ошибка:', error));
+            }
+        }
+    </script>
+
+
+
+{% if selected_gallery %}
+    <p>Картины в галерее "{{ selected_gallery.name }}"</p>
+{% else %}
+    <p>Все картины</p>
+{% endif %}
+    <ul>
+        {% for picture in pictures %}
+            <li>{{ picture.name }}</li>
+        {% endfor %}
+    </ul>
+
+    <button onclick="document.getElementById('addPictureModal').style.display='block'">Добавить картину</button>
+
+    <div id="addPictureModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('addPictureModal').style.display='none'">&times;</span>
+            <form method="post">
+                <input type="hidden" name="add_picture" value="true">
+                <label for="picture_name">Название:</label><br>
+                <input type="text" id="picture_name" name="picture_name"><br>
+                <input type="submit" value="Добавить">
+            </form>
+        </div>
+    </div>
+
 
 </article>
-{% endblock %}

@@ -170,19 +170,29 @@ class PaintingRepository:
             painting = await session.get(PaintingOrm, id)
             return painting
 
-    @classmethod
-    async def get_paintings_(cls) -> list[PaintingOrm]:
-        async with async_session() as session:
-            query = select(PaintingOrm)
-            res = await session.execute(query)
-            paintings = res.scalars().all()
-            return list(paintings)
+    # @classmethod
+    # async def get_paintings_(cls) -> list[PaintingOrm]:
+    #     async with async_session() as session:
+    #         query = select(PaintingOrm)
+    #         res = await session.execute(query)
+    #         paintings = res.scalars().all()
+    #         return list(paintings)
 
     @classmethod
     async def get_paintings(cls) -> list[PaintingOrm]:
         async with async_session() as session:
             paintings = (await session.execute(select(PaintingOrm))).scalars().all()
             return list(paintings)
+
+    @classmethod
+    async def delete_painting(cls, painting_id: int):
+        async with async_session() as session:
+            painting = await session.get(PaintingOrm, painting_id)
+            if painting:
+                await session.delete(painting)
+                await session.commit()
+                return
+            raise ValueError("Painting not found")
 
 
 class GalleryRepository:
@@ -231,8 +241,45 @@ class GalleryRepository:
                 .options(selectinload(GalleryOrm.paintings))
                 .where(GalleryOrm.id == gallery_id)
             )
-            return gallery.scalar_one_or_none()
-        raise HTTPException(status_code=404, detail="Gallery not found")
+            if gallery:
+                return gallery.scalar_one_or_none()
+            raise ValueError("Gallery not found")
+
+    @classmethod
+    async def add_painting_to_gallery(cls, gallery_id: int, painting_id: int) -> None:
+        async with async_session() as session:
+            gallery = await session.get(GalleryOrm, gallery_id)
+            painting = await session.get(PaintingOrm, painting_id)
+            if gallery and painting:
+                gallery.paintings.append(painting)
+                await session.commit()
+                return
+            if not gallery:
+                raise ValueError("Gallery not found")
+            if not painting:
+                raise ValueError("Painting not found")
+
+    @classmethod
+    async def delete_gallery(cls, gallery_id: int):
+        async with async_session() as session:
+            gallery = await session.get(GalleryOrm, gallery_id)
+            if gallery:
+                await session.delete(gallery)
+                await session.commit()
+                return
+            raise ValueError("Gallery not found")
+
+    @classmethod
+    async def delete_painting_from_gallery(cls, gallery_id: int, painting_id: int):
+        async with async_session() as session:
+            gallery = await session.get(GalleryOrm, gallery_id)
+            if not gallery:
+                raise ValueError("Gallery not found")
+            painting = await session.get(PaintingOrm, painting_id)
+            if not painting:
+                raise ValueError("Painting not found")
+            gallery.paintings.remove(painting)
+            await session.commit()
 
 
 #### functions #####
@@ -276,6 +323,16 @@ async def add_test_data():
                 desc="testdesc2",
                 price="2000",
                 status="sold",
+            ),
+            PaintingOrm(
+                name="testpainting3",
+                image="testimage3",
+                size="300x300",
+                material="color",
+                technique="paper",
+                desc="testdesc33",
+                price="3000",
+                status="available",
             ),
         ]
         session.add_all(paintings)

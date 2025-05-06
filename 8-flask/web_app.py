@@ -27,12 +27,13 @@
 """
 
 from flask import Flask, render_template, redirect, url_for, request, session
+from flask_wtf.csrf import CSRFProtect
+
 import os
 
 from duck_fox import get_random_duck_and_its_number, get_foxy_urls
 from models import db, User, Painting, Gallery, db_add_new_data
-
-# from models import db, User, Painting, Gallery, db_add_new_data
+from api_calls import *
 
 
 # BASE_DIR = os.path.dirname(__name__)  # так работает если проект открыт из любого места
@@ -53,11 +54,15 @@ app = Flask(
 app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{DB_PATH}"
 # app.config["SECRET_KEY"] = "hastalavistaAbrakadabra336684916"
 app.config["SECRET_KEY"] = "secretkeysecretkeysecretkey1212121"
+# app.secret_key = 'your_secret_key'  # Задайте секретный ключ для сессий
+csrf = CSRFProtect(app)  # Инициализация CSRF-защиты форм
+
 
 # инициализируем Алхимию для веб-приложения
 db.init_app(app)
 with app.app_context():
     db_add_new_data()
+
 
 ##########
 # ROUTES #
@@ -169,35 +174,49 @@ def view_result():
 
 @app.route("/edit/", methods=["POST", "GET"])
 def edit():
-    if request.method == "POST":
-        gallery = request.form.get("gallery")
-        if gallery and len(gallery) > 3:
-            user = User.query.all()
-            gallery = Gallery(gallery, user[0])
-            db.session.add(gallery)
-            db.session.commit()
-        else:
-            painting = request.form.get("painting") or ""
-            answer = request.form.get("answer")
-            wrong1 = request.form.get("wrong1")
-            wrong2 = request.form.get("wrong2")
-            wrong3 = request.form.get("wrong3")
-            if all([painting, answer, wrong1, wrong2, wrong3]):
-                q = Painting(painting, answer, wrong1, wrong2, wrong3)
-                db.session.add(q)
-                db.session.commit()
+    gallery_id = request.args.get("gallery_id")
 
-        return redirect(url_for("view_quiz_edit", qqq="123"))
+    galleries = api_get_galleries()
 
-    galleries = Gallery.query.all()
-    paintings = Painting.query.all()
+    # если галерея выбрана, отображаем картины только этой галереи
+    if gallery_id:
+        gallery_id = int(gallery_id)
+    else:
+        gallery_id = -1
+
+    # # если пост значит выбрана галерея
+    # if request.method == "POST":
+    #     painting = Painting.query.filter_by(id=session["question_id"]).one()
+    #     # если ответы сходятся значит +1
+    #     if painting.answer == request.form.get("ans_text"):
+    #         session["seleted_gallery"] =
+    #     # следующий вопрос
+    #     session["painting_n"] += 1
+
+    if gallery_id != -1:
+        # получить картины для выбранной галереи через API
+        pictures = api_get_paintings_by_gallery_id(gallery_id)
+        selected_gallery = api_get_gallery(gallery_id)
+    else:
+        pictures = api_get_all_paintings()
+        selected_gallery = None
+
     return render_template(
         "edit.html",
-        html_config=html_config,
         galleries=galleries,
-        paintings=paintings,
-        len=len,
+        selected_gallery=selected_gallery,
+        pictures=pictures,
     )
+
+
+@app.route("/gallery_delete/<int:gallery_id>", methods=["DELETE"])
+def delete_gallery(gallery_id):
+    # Логика удаления галереи по gallery_id
+    if request.method == "DELETE":
+        if gallery_id:
+            api_delete_gallery(gallery_id)
+            return redirect(url_for("edit"), code=200)
+    return "", 204
 
 
 ### test pages ###
