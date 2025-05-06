@@ -55,6 +55,12 @@ async def get_galleries() -> list[DataClassGalleryList]:
     return list(map(DataClassGalleryList.model_validate, galleries))
 
 
+@gallery_router.post("")
+async def post_gallery(gallery: DataClassGalleryAdd = Depends()) -> DataClassGalleryGet:
+    id = await GalleryRepository.add_gallery(gallery)
+    return DataClassGalleryGet(id=id, **gallery.model_dump())
+
+
 # не работает c paintings, падает потому что не может загрузить
 # is not bound to a Session; lazy load operation of attribute 'paintings'
 # cannot proceed (Background on this error at: https://sqlalche.me/e/20/bhk3)"
@@ -98,12 +104,6 @@ async def put_gallery_painting(
     except Exception as e:
         raise HTTPException(status_code=422, detail=str(e))
     return {"status": "ok"}
-
-
-@gallery_router.post("")
-async def post_gallery(gallery: DataClassGalleryAdd = Depends()) -> DataClassGalleryGet:
-    id = await GalleryRepository.add_gallery(gallery)
-    return DataClassGalleryGet(id=id, **gallery.model_dump())
 
 
 ######### painting_router ##########

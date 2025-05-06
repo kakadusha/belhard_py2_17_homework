@@ -165,7 +165,7 @@ class PaintingRepository:
             return painting
 
     @classmethod
-    async def get_paintings_(cls) -> list[PaintingOrm]:
+    async def get_paintings(cls) -> list[PaintingOrm]:
         async with async_session() as session:
             query = select(PaintingOrm)
             res = await session.execute(query)
@@ -187,10 +187,10 @@ class GalleryRepository:
     """Все про галерею C R U D"""
 
     @classmethod
-    async def add_gallery(cls, gallery: DataClassGalleryAdd) -> int:
+    async def add_gallery(cls, gallery_add: DataClassGalleryAdd) -> int:
         async with async_session() as session:
-            data = gallery.model_dump()
-            print(data)
+            data = gallery_add.model_dump()
+            print("add_gallery() >", data)
             gallery_orm = GalleryOrm(**data)
             session.add(gallery_orm)
             await session.flush()

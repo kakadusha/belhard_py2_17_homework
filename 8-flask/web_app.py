@@ -184,14 +184,15 @@ def edit():
     else:
         gallery_id = -1
 
-    # # если пост значит выбрана галерея
-    # if request.method == "POST":
-    #     painting = Painting.query.filter_by(id=session["question_id"]).one()
-    #     # если ответы сходятся значит +1
-    #     if painting.answer == request.form.get("ans_text"):
-    #         session["seleted_gallery"] =
-    #     # следующий вопрос
-    #     session["painting_n"] += 1
+    # если пост значит добавлена галерея
+    if request.method == "POST":
+        # получаем данные из формы
+        gallery_name = request.form.get("name")
+        gallery_user_id = request.form.get("user_id")
+        gallery_desc = request.form.get("desc")
+        # добавляем галерею в БД
+        api_add_gallery(gallery_name, gallery_user_id, gallery_desc)
+        return redirect(url_for("edit"), code=302)
 
     if gallery_id != -1:
         # получить картины для выбранной галереи через API
@@ -209,13 +210,13 @@ def edit():
     )
 
 
-@app.route("/gallery_delete/<int:gallery_id>", methods=["DELETE"])
-def delete_gallery(gallery_id):
+@app.route("/gallery_delete/<int:gallery_id>", methods=["GET"])
+def gallery_delete(gallery_id):
     # Логика удаления галереи по gallery_id
-    if request.method == "DELETE":
+    if request.method == "GET":
         if gallery_id:
             api_delete_gallery(gallery_id)
-            return redirect(url_for("edit"), code=200)
+            return redirect(url_for("edit"))
     return "", 204
 
 

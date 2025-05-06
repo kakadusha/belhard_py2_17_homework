@@ -52,25 +52,60 @@
     <button onclick="document.getElementById('addGalleryModal').style.display='block'">Добавить галерею</button>
     <button onclick="document.getElementById('delGalleryModal').style.display='block'">Удалить галерею</button>
 
+    <!-- <script>
+        function sendFormWithCSRF(method, url) {
+            alert('Отправка формы с CSRF защитой');
+            event.preventDefault(); // Предотвращаем стандартное поведение формы
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token() }}'  // используем CSRF защиту
+                },
+                body: new FormData(this)
+            })
+            .then(response => {
+                if (! response.ok) alert('Ошибка при отправке формы');
+            })
+            .catch(error => console.error('Ошибка:', error));
+            // .then(response => response.text())
+            // .then(data => alert(data))
+            // .catch(error => alert('Error: ' + error));
+        }
+    </script> -->
+
     <div id="addGalleryModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="document.getElementById('addGalleryModal').style.display='none'">&times;</span>
-            <form method="post">
-                <input type="hidden" name="add_gallery" value="true">
-                <label for="gallery_name">Название:</label><br>
-                <input type="text" id="gallery_name" name="gallery_name"><br>
-                <label for="gallery_user_id">ID пользователя:</label><br>
-                <input type="text" id="gallery_user_id" name="gallery_user_id"><br>
-                <label for="gallery_desc">Описание:</label><br>
-                <textarea id="gallery_desc" name="gallery_desc"></textarea><br>
+            <form id="addGalleryModalForm" method="POST" action="/edit/">
+                <!--input type="hidden" name="add_gallery" value="true"-->
+                <label for="name">Название:</label><br>
+                <input type="text" id="name" name="name"><br>
+                <label for="user_id">ID пользователя:</label><br>
+                <input type="text" id="user_id" name="user_id"><br>
+                <label for="desc">Описание:</label><br>
+                <textarea id="desc" name="desc"></textarea><br>
                 <input type="submit" value="Добавить">
             </form>
         </div>
     </div>
-
-
-
-
+    <script>
+        document.getElementById('addGalleryModalForm').onsubmit = function(event) {
+            event.preventDefault(); // Предотвращаем стандартное поведение формы
+            var formData = new FormData(this); // Получаем данные формы
+            fetch(this.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token() }}' // используем CSRF защиту
+                    },
+                    body: formData // Отправляем данные формы
+                })
+                .then(response => {
+                    if (!response.ok) alert('Ошибка при отправке формы');
+                })
+                .catch(error => alert('Error: ' + error));
+        };
+    </script>
 
     <div id="delGalleryModal" class="modal">
         <div class="modal-content">
@@ -78,45 +113,42 @@
             <ul>
                 {% for gallery in galleries %}
                 <li>
-                    <a href="#" onclick="deleteGallery({{ gallery.id }})">Удалить {{ gallery.name }}</a>
+                    <a href="#"
+                        onclick="deleteGalleryWithCSRF('GET', '/gallery_delete/'+{{ gallery.id }})">Удалить
+                        {{ gallery.name }}</a>
                 </li>
                 {% endfor %}
             </ul>
         </div>
     </div>
     <script>
-        function deleteGallery(galleryId) {
-            if (true) {
-                fetch('/gallery_delete/'+galleryId, {
-                    method: 'DELETE',
+        function deleteGalleryWithCSRF(method, url) {
+            //alert('Удаление с CSRF защитой');
+            fetch(url, {
+                    method: method,
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRFToken': '{{ csrf_token() }}'  // если используете CSRF защиту
+                        'X-CSRFToken': '{{ csrf_token() }}' // используем CSRF защиту
                     }
                 })
                 .then(response => {
-                    if (response.ok) {
-                        alert('Галерея удалена');
-                        location.reload();
-                    } else {
-                        alert('Ошибка при удалении галереи');
-                    }
+                    if ( !response.redirected && !response.ok) alert('Ошибка при отправке формы');
                 })
                 .catch(error => console.error('Ошибка:', error));
-            }
+            // go to redirected url
+            window.location.href = response.url;
+            window.location.reload();
         }
     </script>
 
-
-
-{% if selected_gallery %}
+    {% if selected_gallery %}
     <p>Картины в галерее "{{ selected_gallery.name }}"</p>
-{% else %}
+    {% else %}
     <p>Все картины</p>
-{% endif %}
+    {% endif %}
     <ul>
         {% for picture in pictures %}
-            <li>{{ picture.name }}</li>
+        <li>{{ picture.name }}</li>
         {% endfor %}
     </ul>
 
@@ -133,6 +165,5 @@
             </form>
         </div>
     </div>
-
 
 </article>

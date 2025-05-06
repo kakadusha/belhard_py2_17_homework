@@ -24,7 +24,7 @@ def api_get_galleries():
     return []
 
 
-def api_post_gallery(name, user_id, desc=None):
+def api_add_gallery(name, user_id, desc=None):
     response = requests.post(
         f"{API_URL}/gallery",
         params={"name": name, "user_id": user_id, "desc": desc},
