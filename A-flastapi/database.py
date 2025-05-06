@@ -209,15 +209,6 @@ class GalleryRepository:
             await session.commit()
             return gallery_orm.id
 
-    # @classmethod
-    # async def get_gallery(cls, id) -> GalleryOrm | None:
-    #     async with async_session() as session:
-    #         query = select(GalleryOrm).filter(GalleryOrm.id == id)
-    #         res = await session.execute(query)
-    #         gallery = res.scalars().first()
-    #         return gallery
-    #     raise HTTPException(status_code=404, detail="Gallery not found")
-
     @classmethod
     async def get_gallery(cls, id: int) -> GalleryOrm | None:
         async with async_session() as session:
