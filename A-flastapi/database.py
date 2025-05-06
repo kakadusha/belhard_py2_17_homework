@@ -30,12 +30,6 @@ DATABASE_URL = f"sqlite+aiosqlite:///{DB_PATH}"
 engine = create_async_engine(DATABASE_URL, echo=True)  # echo=True for debugging
 async_session = async_sessionmaker(engine, expire_on_commit=False)
 
-# ?
-# async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
-# async def new_session():
-#     async with async_session() as session:
-#         yield session
-
 
 class Base(DeclarativeBase):
     pass
@@ -170,18 +164,12 @@ class PaintingRepository:
             painting = await session.get(PaintingOrm, id)
             return painting
 
-    # @classmethod
-    # async def get_paintings_(cls) -> list[PaintingOrm]:
-    #     async with async_session() as session:
-    #         query = select(PaintingOrm)
-    #         res = await session.execute(query)
-    #         paintings = res.scalars().all()
-    #         return list(paintings)
-
     @classmethod
-    async def get_paintings(cls) -> list[PaintingOrm]:
+    async def get_paintings_(cls) -> list[PaintingOrm]:
         async with async_session() as session:
-            paintings = (await session.execute(select(PaintingOrm))).scalars().all()
+            query = select(PaintingOrm)
+            res = await session.execute(query)
+            paintings = res.scalars().all()
             return list(paintings)
 
     @classmethod
@@ -221,7 +209,6 @@ class GalleryRepository:
             query = select(GalleryOrm)
             res = await session.execute(query)
             galleries = res.scalars().all()
-            # return list
             return list(galleries)
 
     @classmethod
