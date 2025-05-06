@@ -9,3 +9,6 @@ https://proglib.io/p/rukovodstvo-dlya-nachinayushchih-po-shablonam-jinja-v-flask
 Fast API python video
 https://youtu.be/H-Z5UoTwGJM?si=VsF8Qo7Noe56SxT7
 
+
+Алимия alchemy sqlalchrmy python
+https://youtu.be/A72VICB-fjw?si=vIT33l_5iKF0nGdT

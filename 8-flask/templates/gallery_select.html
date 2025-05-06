@@ -14,12 +14,6 @@
 
 {% extends "layout.html" %}
 
-{% block main_menu %}
-<nav>
-    {{ super() }}
-    {% include 'gal_menu.html' %}
-</nav>
-{% endblock %}
 
 {% block content %}
 <article>
@@ -27,7 +21,7 @@
         <div class="form1">
             <h2>Выберите Галерею</h2>
             <div class="gallery-buttons">
-                {% for q in quizes %}
+                {% for q in galleries %}
                 <div class="flex-item">
                     <input type="submit" id="gallery-{{ q.id }}" name="gallery" value="{{ q.id }}" style="display: none;">
                     <label for="gallery-{{ q.id }}">

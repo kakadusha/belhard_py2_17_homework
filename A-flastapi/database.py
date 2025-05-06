@@ -1,14 +1,14 @@
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine, AsyncSession
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
     mapped_column,
     relationship,
     selectinload,
+    sessionmaker,
 )
 from sqlalchemy import select, Integer, ForeignKey, String, Table, Column, func
 from sqlalchemy.future import select
-from typing import List
 
 from datetime import datetime
 
@@ -19,23 +19,26 @@ import os
 BASE_DIR = os.path.dirname(__file__)
 DB_DIR = os.path.join(BASE_DIR, "db")
 
+
 if not os.path.exists(DB_DIR):
     os.makedirs(DB_DIR)
 
 DB_PATH = os.path.join(DB_DIR, "fastapi.db")
-
-engine = create_async_engine(f"sqlite+aiosqlite:///{DB_PATH}")
-new_session = async_sessionmaker(engine, expire_on_commit=False)
+DATABASE_URL = f"sqlite+aiosqlite:///{DB_PATH}"
 
 
-class Model(DeclarativeBase):
+engine = create_async_engine(DATABASE_URL, echo=True)  # echo=True for debugging
+async_session = async_sessionmaker(engine, expire_on_commit=False)
+
+
+class Base(DeclarativeBase):
     pass
 
 
 ##### USER #####
 
 
-class UserOrm(Model):
+class UserOrm(Base):
     """Работа на уровне таблиц для User"""
 
     __tablename__ = "users"
@@ -51,14 +54,14 @@ class UserOrm(Model):
 # many_to_many
 gallery_painting = Table(
     "gallery_painting",
-    Model.metadata,
+    Base.metadata,
     Column("gallery_id", Integer, ForeignKey("gallery.id"), primary_key=True),
     Column("painting_id", Integer, ForeignKey("painting.id"), primary_key=True),
 )
 
 
 ##### PAINTING #####
-class PaintingOrm(Model):
+class PaintingOrm(Base):
     """Работа на уровне таблиц для Painting"""
 
     __tablename__ = "painting"
@@ -71,17 +74,18 @@ class PaintingOrm(Model):
     desc: Mapped[str]
     price: Mapped[str]
     status: Mapped[str]
-    # Установите связь с GalleryOrm
-    # galleries: Mapped[list[GalleryOrm]] = relationship(
+    # связь с GalleryOrm
     galleries = relationship(
-        "GalleryOrm", secondary=gallery_painting, back_populates="paintings"
+        "GalleryOrm",
+        secondary=gallery_painting,
+        back_populates="paintings",
     )
 
 
 ##### GALLERY #####
 
 
-class GalleryOrm(Model):
+class GalleryOrm(Base):
     __tablename__ = "gallery"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
@@ -91,8 +95,7 @@ class GalleryOrm(Model):
         default=func.now(), onupdate=func.now()
     )
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    # RE: painting = []
-    # Определите связь с PaintingOrm
+    # связь с PaintingOrm
     paintings: Mapped[list[PaintingOrm]] = relationship(
         "PaintingOrm", secondary=gallery_painting, back_populates="galleries"
     )
@@ -105,32 +108,39 @@ class UserRepository:
     """Все про юзера C R U D"""
 
     @classmethod
-    async def add_user(cls, user: pdUserAdd) -> int:
-        async with new_session() as session:
+    async def add_user(cls, user: DataClassUserAdd) -> int:
+        async with async_session() as session:
             data = user.model_dump()
             print(data)
             user_orm = UserOrm(**data)
             session.add(user_orm)
             await session.flush()
+            # await session.refresh(user_orm) # Refresh to get the ID
             await session.commit()
             return user_orm.id
 
     @classmethod
     async def get_users(cls) -> list[UserOrm]:
-        async with new_session() as session:
+        async with async_session() as session:
             query = select(UserOrm)
             res = await session.execute(query)
             users = res.scalars().all()
             # return list
             return list(users)
 
+    # @classmethod
+    # async def get_user(cls, id: int) -> UserOrm | None:
+    #     async with new_session() as session:
+    #         query = select(UserOrm).filter(UserOrm.id == id)
+    #         # query = text(f"SELECT * FROM users WHERE id={id}")
+    #         res = await session.execute(query)
+    #         user = res.scalars().first()
+    #         return user
+
     @classmethod
-    async def get_user(cls, id) -> UserOrm | None:
-        async with new_session() as session:
-            query = select(UserOrm).filter(UserOrm.id == id)
-            # query = text(f"SELECT * FROM users WHERE id={id}")
-            res = await session.execute(query)
-            user = res.scalars().first()
+    async def get_user(cls, id: int) -> UserOrm | None:
+        async with async_session() as session:
+            user = await session.get(UserOrm, id)  # Much simpler
             return user
 
 
@@ -138,8 +148,8 @@ class PaintingRepository:
     """Все про картину C R U D"""
 
     @classmethod
-    async def add_painting(cls, painting: pdPaintingAdd) -> int:
-        async with new_session() as session:
+    async def add_painting(cls, painting: DataClassPaintingAdd) -> int:
+        async with async_session() as session:
             data = painting.model_dump()
             print(data)
             painting_orm = PaintingOrm(**data)
@@ -149,31 +159,38 @@ class PaintingRepository:
             return painting_orm.id
 
     @classmethod
-    async def get_painting(cls, id) -> PaintingOrm | None:
-        async with new_session() as session:
-            query = select(PaintingOrm).filter(PaintingOrm.id == id)
-            res = await session.execute(query)
-            painting = res.scalars().first()
+    async def get_painting(cls, id: int) -> PaintingOrm | None:
+        async with async_session() as session:
+            painting = await session.get(PaintingOrm, id)
             return painting
 
     @classmethod
     async def get_paintings(cls) -> list[PaintingOrm]:
-        async with new_session() as session:
+        async with async_session() as session:
             query = select(PaintingOrm)
             res = await session.execute(query)
             paintings = res.scalars().all()
-            # return list
             return list(paintings)
+
+    @classmethod
+    async def delete_painting(cls, painting_id: int):
+        async with async_session() as session:
+            painting = await session.get(PaintingOrm, painting_id)
+            if painting:
+                await session.delete(painting)
+                await session.commit()
+                return
+            raise ValueError("Painting not found")
 
 
 class GalleryRepository:
     """Все про галерею C R U D"""
 
     @classmethod
-    async def add_gallery(cls, gallery: pdGalleryAdd) -> int:
-        async with new_session() as session:
-            data = gallery.model_dump()
-            print(data)
+    async def add_gallery(cls, gallery_add: DataClassGalleryAdd) -> int:
+        async with async_session() as session:
+            data = gallery_add.model_dump()
+            print("add_gallery() >", data)
             gallery_orm = GalleryOrm(**data)
             session.add(gallery_orm)
             await session.flush()
@@ -181,39 +198,66 @@ class GalleryRepository:
             return gallery_orm.id
 
     @classmethod
-    async def get_gallery(cls, id) -> GalleryOrm | None:
-        async with new_session() as session:
-            query = select(GalleryOrm).filter(GalleryOrm.id == id)
-            res = await session.execute(query)
-            gallery = res.scalars().first()
+    async def get_gallery(cls, id: int) -> GalleryOrm | None:
+        async with async_session() as session:
+            gallery = await session.get(GalleryOrm, id)
             return gallery
-        raise HTTPException(status_code=404, detail="Gallery not found")
-
-    # async with new_session() as session:
-    #     gallery = await session.get(GalleryOrm, id)
-    #     if gallery:
-    #         return gallery
-    #         # return DataClassGalleryGet.model_validate(gallery)
 
     @classmethod
     async def get_galleries(cls) -> list[GalleryOrm]:
-        async with new_session() as session:
+        async with async_session() as session:
             query = select(GalleryOrm)
             res = await session.execute(query)
             galleries = res.scalars().all()
-            # return list
             return list(galleries)
 
     @classmethod
     async def get_gallery_with_paintings(cls, gallery_id) -> GalleryOrm | None:
-        async with new_session() as session:
+        async with async_session() as session:
             gallery = await session.execute(
                 select(GalleryOrm)
                 .options(selectinload(GalleryOrm.paintings))
                 .where(GalleryOrm.id == gallery_id)
             )
-            return gallery.scalar_one_or_none()
-        raise HTTPException(status_code=404, detail="Gallery not found")
+            if gallery:
+                return gallery.scalar_one_or_none()
+            raise ValueError("Gallery not found")
+
+    @classmethod
+    async def add_painting_to_gallery(cls, gallery_id: int, painting_id: int) -> None:
+        async with async_session() as session:
+            gallery = await session.get(GalleryOrm, gallery_id)
+            painting = await session.get(PaintingOrm, painting_id)
+            if gallery and painting:
+                gallery.paintings.append(painting)
+                await session.commit()
+                return
+            if not gallery:
+                raise ValueError("Gallery not found")
+            if not painting:
+                raise ValueError("Painting not found")
+
+    @classmethod
+    async def delete_gallery(cls, gallery_id: int):
+        async with async_session() as session:
+            gallery = await session.get(GalleryOrm, gallery_id)
+            if gallery:
+                await session.delete(gallery)
+                await session.commit()
+                return
+            raise ValueError("Gallery not found")
+
+    @classmethod
+    async def delete_painting_from_gallery(cls, gallery_id: int, painting_id: int):
+        async with async_session() as session:
+            gallery = await session.get(GalleryOrm, gallery_id)
+            if not gallery:
+                raise ValueError("Gallery not found")
+            painting = await session.get(PaintingOrm, painting_id)
+            if not painting:
+                raise ValueError("Painting not found")
+            gallery.paintings.remove(painting)
+            await session.commit()
 
 
 #### functions #####
@@ -221,16 +265,16 @@ class GalleryRepository:
 
 async def create_tables():
     async with engine.begin() as conn:
-        await conn.run_sync(Model.metadata.create_all)
+        await conn.run_sync(Base.metadata.create_all)
 
 
 async def delete_tables():
     async with engine.begin() as conn:
-        await conn.run_sync(Model.metadata.drop_all)
+        await conn.run_sync(Base.metadata.drop_all)
 
 
 async def add_test_data():
-    async with new_session() as session:
+    async with async_session() as session:
         users = [
             UserOrm(name="testuser1", age=20),
             UserOrm(name="testuser2", age=30, phone="123456789"),
@@ -257,6 +301,16 @@ async def add_test_data():
                 desc="testdesc2",
                 price="2000",
                 status="sold",
+            ),
+            PaintingOrm(
+                name="testpainting3",
+                image="testimage3",
+                size="300x300",
+                material="color",
+                technique="paper",
+                desc="testdesc33",
+                price="3000",
+                status="available",
             ),
         ]
         session.add_all(paintings)

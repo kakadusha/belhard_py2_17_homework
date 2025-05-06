@@ -1,25 +1,28 @@
 from pydantic import BaseModel, ConfigDict
 
 
-class pdUserAdd(BaseModel):
+### User
+
+
+class DataClassUserAdd(BaseModel):
     name: str
     age: int
     phone: str | None = None
 
 
-class pdUserGet(pdUserAdd):
+class DataClassUserGet(DataClassUserAdd):
     id: int
     model_config = ConfigDict(from_attributes=True)
 
 
-class pdUserId(BaseModel):
+class DataClassUserId(BaseModel):
     id: int
 
 
 ### Painting
 
 
-class pdPaintingAdd(BaseModel):
+class DataClassPaintingAdd(BaseModel):
     name: str
     image: str
     size: str
@@ -30,7 +33,7 @@ class pdPaintingAdd(BaseModel):
     status: str | None = None
 
 
-class pdPaintingGet(pdPaintingAdd):
+class DataClassPaintingGet(DataClassPaintingAdd):
     id: int
     model_config = ConfigDict(from_attributes=True)
 
@@ -38,18 +41,18 @@ class pdPaintingGet(pdPaintingAdd):
 ### Gallery
 
 
-class pdGalleryAdd(BaseModel):
+class DataClassGalleryAdd(BaseModel):
     name: str
     user_id: int
     desc: str | None = None
 
 
-class pdGalleryList(pdGalleryAdd):
+class DataClassGalleryList(DataClassGalleryAdd):
     id: int
     model_config = ConfigDict(from_attributes=True)
 
 
-class pdGalleryGet(pdGalleryAdd):
+class DataClassGalleryGet(DataClassGalleryAdd):
     id: int
     paintings: list[int] | None = None
     model_config = ConfigDict(from_attributes=True)

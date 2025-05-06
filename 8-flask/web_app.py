@@ -27,12 +27,13 @@
 """
 
 from flask import Flask, render_template, redirect, url_for, request, session
+from flask_wtf.csrf import CSRFProtect
+
 import os
 
 from duck_fox import get_random_duck_and_its_number, get_foxy_urls
 from models import db, User, Painting, Gallery, db_add_new_data
-
-# from models import db, User, Painting, Gallery, db_add_new_data
+from api_calls import *
 
 
 # BASE_DIR = os.path.dirname(__name__)  # так работает если проект открыт из любого места
@@ -53,11 +54,15 @@ app = Flask(
 app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{DB_PATH}"
 # app.config["SECRET_KEY"] = "hastalavistaAbrakadabra336684916"
 app.config["SECRET_KEY"] = "secretkeysecretkeysecretkey1212121"
+# app.secret_key = 'your_secret_key'  # Задайте секретный ключ для сессий
+csrf = CSRFProtect(app)  # Инициализация CSRF-защиты форм
+
 
 # инициализируем Алхимию для веб-приложения
 db.init_app(app)
 with app.app_context():
     db_add_new_data()
+
 
 ##########
 # ROUTES #
@@ -66,14 +71,18 @@ with app.app_context():
 
 @app.route("/")
 def index():
-    return render_template("default_page.html")
+    return render_template("default_page.html", html_config=html_config)
 
 
 @app.route("/duck/")
 def duck():
     (img_url, number) = get_random_duck_and_its_number()
     return render_template(
-        "duck.html", title=f"рандомная утка №{number}", img_url=img_url, number=number
+        "duck.html",
+        title=f"рандомная утка №{number}",
+        img_url=img_url,
+        number=number,
+        html_config=html_config,
     )
 
 
@@ -85,7 +94,11 @@ def fox(num):
 
     foxes = get_foxy_urls(num, MAX_FOX_CNT)
     return render_template(
-        "fox.html", title=f"Pандомная лиса, {num} штук", foxes=foxes, number=num
+        "fox.html",
+        title=f"Pандомная лиса, {num} штук",
+        foxes=foxes,
+        number=num,
+        html_config=html_config,
     )
 
 
@@ -93,16 +106,16 @@ def fox(num):
 def view_gallery():
     if request.method == "GET":
         session["gallery_id"] = -1
-        quizes = Gallery.query.all()
-        # print(quizes)
+        galleries = Gallery.query.all()
+        # print(galleries)
         return render_template(
-            "gallery_select.html", quizes=quizes, html_config=html_config
+            "gallery_select.html", galleries=galleries, html_config=html_config
         )
     session["gallery_id"] = request.form.get("gallery")
     session["painting_n"] = 0
     session["question_id"] = 0
     session["right_answers"] = 0
-    return redirect(url_for("view_painting"))
+    return redirect(url_for("painting"))
 
 
 @app.route("/painting/", methods=["POST", "GET"])
@@ -156,14 +169,74 @@ def view_result():
     )
 
 
+### edit pages (adm part) ###
+
+
+@app.route("/edit/", methods=["POST", "GET"])
+def edit():
+    gallery_id = request.args.get("gallery_id")
+
+    galleries = api_get_galleries()
+
+    # если галерея выбрана, отображаем картины только этой галереи
+    if gallery_id:
+        gallery_id = int(gallery_id)
+    else:
+        gallery_id = -1
+
+    # если пост значит добавлена галерея
+    if request.method == "POST":
+        # получаем данные из формы
+        gallery_name = request.form.get("name")
+        gallery_user_id = request.form.get("user_id")
+        gallery_desc = request.form.get("desc")
+        # добавляем галерею в БД
+        api_add_gallery(gallery_name, gallery_user_id, gallery_desc)
+        return redirect(url_for("edit"), code=302)
+
+    if gallery_id != -1:
+        # получить картины для выбранной галереи через API
+        pictures = api_get_paintings_by_gallery_id(gallery_id)
+        selected_gallery = api_get_gallery(gallery_id)
+    else:
+        pictures = api_get_all_paintings()
+        selected_gallery = None
+
+    return render_template(
+        "edit.html",
+        galleries=galleries,
+        selected_gallery=selected_gallery,
+        pictures=pictures,
+    )
+
+
+@app.route("/gallery_delete/<int:gallery_id>", methods=["GET"])
+def gallery_delete(gallery_id):
+    # Логика удаления галереи по gallery_id
+    if request.method == "GET":
+        if gallery_id:
+            api_delete_gallery(gallery_id)
+            return redirect(url_for("edit"))
+    return "", 204
+
+
+### test pages ###
+
+
 @app.route("/page1/")
-def home():
-    return render_template("page1.html")
+def page1():
+    return render_template(
+        "page1.html",
+        html_config=html_config,
+    )
 
 
 @app.route("/page2/")
 def page2():
-    return render_template("page2.html")
+    return render_template(
+        "page2.html",
+        html_config=html_config,
+    )
 
 
 # Сработает если ошибка 404 - т.е. любой другой путь который выше не предусмотрен
