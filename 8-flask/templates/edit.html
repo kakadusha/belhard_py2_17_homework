@@ -135,9 +135,11 @@
                     if ( !response.redirected && !response.ok) alert('Ошибка при отправке формы');
                 })
                 .catch(error => console.error('Ошибка:', error));
-            // go to redirected url
-            window.location.href = response.url;
-            window.location.reload();
+            // все 3 нужны:
+            document.location.reload();
+            //this.hide(); // Закрываем модальное окно   ****
+
+            location.reload();
         }
     </script>
 

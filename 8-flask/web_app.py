@@ -52,9 +52,10 @@ app = Flask(
 )
 
 app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{DB_PATH}"
+# Задайте секретный ключ для сессий
 # app.config["SECRET_KEY"] = "hastalavistaAbrakadabra336684916"
 app.config["SECRET_KEY"] = "secretkeysecretkeysecretkey1212121"
-# app.secret_key = 'your_secret_key'  # Задайте секретный ключ для сессий
+# app.secret_key = 'your_secret_key'
 csrf = CSRFProtect(app)  # Инициализация CSRF-защиты форм
 
 
@@ -176,7 +177,7 @@ def view_result():
 def edit():
     gallery_id = request.args.get("gallery_id")
 
-    galleries = api_get_galleries()
+    galleries = api_get_all_galleries()
 
     # если галерея выбрана, отображаем картины только этой галереи
     if gallery_id:
@@ -216,8 +217,14 @@ def gallery_delete(gallery_id):
     if request.method == "GET":
         if gallery_id:
             api_delete_gallery(gallery_id)
-            return redirect(url_for("edit"))
-    return "", 204
+            # return redirect(url_for("edit"))
+            return render_template(
+                "edit.html",
+                galleries=api_get_all_galleries(),
+                selected_gallery=-1,
+                pictures=api_get_all_paintings(),
+            )
+    return "", 204  # OK, No Content
 
 
 ### test pages ###

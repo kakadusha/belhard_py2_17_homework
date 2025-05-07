@@ -17,7 +17,7 @@ def api_get_gallery(gallery_id):
     return None
 
 
-def api_get_galleries():
+def api_get_all_galleries():
     response = requests.get(f"{API_URL}/gallery")
     if response.status_code == 200:
         return response.json()
