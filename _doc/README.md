@@ -12,3 +12,6 @@ https://youtu.be/H-Z5UoTwGJM?si=VsF8Qo7Noe56SxT7
 
 Алимия alchemy sqlalchrmy python
 https://youtu.be/A72VICB-fjw?si=vIT33l_5iKF0nGdT
+
+Django Джанго
+https://www.youtube.com/watch?v=QaxLpuDWvZI&list=PLDyJYA6aTY1nZ9fSGcsK4wqeu-xaJksQQ

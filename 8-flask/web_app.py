@@ -26,7 +26,7 @@
 
 """
 
-from flask import Flask, render_template, redirect, url_for, request, session
+from flask import Flask, render_template, redirect, url_for, request, session, flash
 from flask_wtf.csrf import CSRFProtect
 
 import os
@@ -34,6 +34,7 @@ import os
 from duck_fox import get_random_duck_and_its_number, get_foxy_urls
 from models import db, User, Painting, Gallery, db_add_new_data
 from api_calls import *
+from forms import FormAddGallery, FormAddPaintings, FormAddUser
 
 
 # BASE_DIR = os.path.dirname(__name__)  # так работает если проект открыт из любого места
@@ -208,6 +209,50 @@ def edit():
         galleries=galleries,
         selected_gallery=selected_gallery,
         pictures=pictures,
+    )
+
+
+@app.route("/edit2/", methods=["GET", "POST"])
+def edit2():
+    gallery_id = request.args.get("gallery_id")
+
+    galleries = api_get_all_galleries()
+
+    # если галерея выбрана, отображаем картины только этой галереи
+    if gallery_id:
+        gallery_id = int(gallery_id)
+    else:
+        gallery_id = -1
+
+    if gallery_id != -1:
+        # получить картины для выбранной галереи через API
+        pictures = api_get_paintings_by_gallery_id(gallery_id)
+        selected_gallery = api_get_gallery(gallery_id)
+    else:
+        pictures = api_get_all_paintings()
+        selected_gallery = None
+
+    # # если пост значит добавлена галерея
+    # if request.method == "POST":
+    #     # получаем данные из формы
+    #     gallery_name = request.form.get("name")
+    #     gallery_user_id = request.form.get("user_id")
+    #     gallery_desc = request.form.get("desc")
+    #     # добавляем галерею в БД
+    #     api_add_gallery(gallery_name, gallery_user_id, gallery_desc)
+    #     return redirect(url_for("edit"), code=302)
+    form_add_gal = FormAddGallery()
+    if form_add_gal.validate_on_submit():
+        name = form_add_gal.name.data
+        flash(f"Hello, {name}!")
+        return redirect(url_for("edit2"))
+
+    return render_template(
+        "edit2.html",
+        galleries=galleries,
+        selected_gallery=selected_gallery,
+        pictures=pictures,
+        form_add_gal=form_add_gal,
     )
 
 

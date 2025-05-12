@@ -51,34 +51,14 @@
 
     <button onclick="document.getElementById('addGalleryModal').style.display='block'">Добавить галерею</button>
     <button onclick="document.getElementById('delGalleryModal').style.display='block'">Удалить галерею</button>
+    <br>
 
-    <!-- <script>
-        function sendFormWithCSRF(method, url) {
-            alert('Отправка формы с CSRF защитой');
-            event.preventDefault(); // Предотвращаем стандартное поведение формы
-            fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token() }}'  // используем CSRF защиту
-                },
-                body: new FormData(this)
-            })
-            .then(response => {
-                if (! response.ok) alert('Ошибка при отправке формы');
-            })
-            .catch(error => console.error('Ошибка:', error));
-            // .then(response => response.text())
-            // .then(data => alert(data))
-            // .catch(error => alert('Error: ' + error));
-        }
-    </script> -->
 
     <div id="addGalleryModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="document.getElementById('addGalleryModal').style.display='none'">&times;</span>
             <form id="addGalleryModalForm" method="POST" action="/edit/">
-                <!--input type="hidden" name="add_gallery" value="true"-->
+                <input type="hidden" name="add_gallery" value="true">
                 <label for="name">Название:</label><br>
                 <input type="text" id="name" name="name"><br>
                 <label for="user_id">ID пользователя:</label><br>
@@ -142,6 +122,9 @@
             location.reload();
         }
     </script>
+
+
+    <!-- Картины -->
 
     {% if selected_gallery %}
     <p>Картины в галерее "{{ selected_gallery.name }}"</p>

@@ -4,14 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flask Flexbox Template</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles_f4.css') }}">
+    <title>Django Flexbox Template</title>
+    <link rel="stylesheet" href="/static/css/styles_f4.css">
 </head>
 
 <body>
     <header>
         <!--p class="note">header</p-->
-        <h1>Welcome to Flask app</h1>
+        <h1>Welcome to Django Main app</h1>
     </header>
     <main>
         <!--p class="note floating-text">main</p-->
@@ -27,13 +27,6 @@
             <a href="/">Главная</a>
             <a href="/duck/">Утка</a>
             <a href="/fox/1/" id="fox_link">Лиса</a>
-            <a href="/select-gallery/">Галерея</a>
-            {% if html_config['admin'] %}
-            <a href="/edit/">Редактор </a>
-            <a href="/edit2/">Редактор (flask) </a>
-            {% endif %}
-            <a href="/page1/">Страница 1</a>
-            <a href="/page2/">Страница 2</a>
         {% endblock %}
         </nav>
 
@@ -41,7 +34,7 @@
             <!--p class="note">sidebar</p-->
             <div class="flex-container">
                 <div>
-                    <img class="flex-img" src="{{ url_for('static', filename='pic/cat.jpg') }}" alt="Cat" width=50
+                    <img class="flex-img" src="/static/pic/cat.jpg" alt="Cat" width=50
                         height="50" style="border-radius: 50%; align-content: center;">
                 </div>
             </div>
@@ -49,7 +42,7 @@
     </main>
     <footer>
         <!--p class="note">footer</p-->
-        <h5><small>© 2023 Мое Flask Приложение</small></h5>
+        <h5><small>© 2023 Мое Django Приложение</small></h5>
     </footer>
 
     <script>
