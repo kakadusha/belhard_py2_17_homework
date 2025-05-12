@@ -6,25 +6,33 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0002_student_time_create_student_time_update'),
+        ("main", "0002_student_time_create_student_time_update"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='student',
-            options={'ordering': ['surname'], 'verbose_name': 'Студент', 'verbose_name_plural': 'Студенты'},
+            name="student",
+            options={
+                "ordering": ["surname"],
+                "verbose_name": "Студент",
+                "verbose_name_plural": "Студенты",
+            },
         ),
         migrations.AddField(
-            model_name='student',
-            name='photo',
-            field=models.ImageField(blank=True, upload_to='phontos/%Y/%m/%d', verbose_name='Фото'),
+            model_name="student",
+            name="photo",
+            field=models.ImageField(
+                blank=True, upload_to="phontos/%Y/%m/%d", verbose_name="Фото"
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='student',
-            unique_together={('name', 'surname')},
+            name="student",
+            unique_together={("name", "surname")},
         ),
         migrations.AddIndex(
-            model_name='student',
-            index=models.Index(fields=['surname'], name='main_studen_surname_307540_idx'),
+            model_name="student",
+            index=models.Index(
+                fields=["surname"], name="main_studen_surname_307540_idx"
+            ),
         ),
     ]
