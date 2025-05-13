@@ -71,7 +71,7 @@ class Student(models.Model):
         return f"{self.name} {self.surname} ({self.age})"
 
     def get_absolute_url(self):
-        return reverse("student2", kwargs={"name_slug": self.slug})
+        return reverse("student", kwargs={"name_slug": self.slug})
 
     # # для того чтобы slug создавался автоматически
     # pip install pytils

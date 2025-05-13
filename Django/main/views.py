@@ -68,12 +68,15 @@ def about(request):
     return HttpResponse("<h4>Страница About</h4>")
 
 
+def under_constuction(request, name_slug=""):
+    return HttpResponse(f"<h3>Витрина оформляется</h3><p>{name_slug}</p>")
+
+
 def students(request):
     students = Student.objects.all()
     return render(request, "main/students.html", context={"students": students})
 
 
-# на уроке не работала т.к. я был авторизован как админ 😂
 # @login_required(login_url='/login/')
 def student(request, id):
     student = Student.objects.get(id=id)
