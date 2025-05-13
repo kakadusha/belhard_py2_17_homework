@@ -17,26 +17,20 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include, re_path
-
 # from app1.views import index, hello2, hello3, user_num
 # from app1 import views
 from main.views import *
-
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
-    path("", index, name="index"),
-    path("", include("main.urls")),
-    path("admin/", admin.site.urls),
-    path("students/", students, name="students"),
-    path("students2/", StudentsView.as_view(), name="students2"),
-    # path("students/<int:id>", StudentsView.as_view, name="students2"),
+    path('', index, name='index'),
+    path('', include('main.urls')), 
+    
+    path('admin/', admin.site.urls),
+    
 ]
 
-
-"""
-ТИПЫ ПАРАМЕТРОВ
-str — любая непустая строка без символа /
-int — положительное целое число
-slug — буквы, цифры, дефисы и подчёркивания
-uuid — UUID
-path — строка, может содержать символ /"""
+if settings.DEBUG:
+        urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    
