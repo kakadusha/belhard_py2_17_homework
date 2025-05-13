@@ -5,20 +5,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Django Flexbox Template</title>
-    <link rel="stylesheet" href="/static/css/styles_f4.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 
 <body>
     <header>
         <!--p class="note">header</p-->
-        <h1>Welcome to Django Main app</h1>
+        <h1>
+        {% block title %}
+        Welcome to Django Main app
+        {% endblock title %}
+        </h1>
+        <h3>{% block content_head %}{% endblock content_head %}</h3>
+
     </header>
     <main>
         <!--p class="note floating-text">main</p-->
+
         <!-- MAIN CONTENT HERE -->
 
+        <article>
         {% block content %}
         {% endblock %}
+        </article>
 
         <!---->
         <nav>
@@ -27,7 +36,13 @@
             <a href="/">Главная</a>
             <a href="/duck/">Утка</a>
             <a href="/fox/1/" id="fox_link">Лиса</a>
-            <a href="/admin">Админка</a> 
+            <a href="{% url 'students' %}">Студенты</a>
+            <a href="{% url 'students2' %}">Студенты2</a>
+            <a href="#">Курсы</a>
+            <a href="#">Журнал</a>
+            <a href="/admin">Админка</a>
+            <a href="/login">Логин</a>
+            <a href="/about">About</a>
        {% endblock %}
         </nav>
 

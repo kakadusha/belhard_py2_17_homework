@@ -1,5 +1,9 @@
 {% extends 'main/layout.html' %}
 
+{% block title %} {{title}} {% endblock %}
+
+{#% block content_head %#}{#% endblock %#}
+
 {% block content %}
 
 <style>
@@ -35,7 +39,6 @@
 
 <article>
 <div class="article">
-    <h2>{{title}}</h2>
 
     <div class="gallery">
         {% for fox in foxes %}
