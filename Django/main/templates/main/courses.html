@@ -1,0 +1,33 @@
+{% extends 'main/layout.html' %}
+
+
+
+{% block title %} Курсы {% endblock %}
+
+{% block content_head %} Список {% endblock %}
+
+{% block content %}
+<div class="courses">
+    <div class="courses-cell"> № </div>
+    <!--div class="students-cell"> Название </div-->
+    <div class="courses-cell"> Язык </div>
+    <div class="courses-cell"> Начало  </div>
+    <div class="courses-cell"> Окончание  </div>
+    <div class="courses-cell"> ID  </div>
+    <div class="courses-cell"> Описание  </div>
+
+
+    {% for c in courses %}
+        <div class="courses-cell"> <a href="{#% url 'course' c.id %#}">{{ forloop.counter}}</a></div>
+
+        <div class="courses-cell"> <a href="{{ c.get_absolute_url }}">{{c.name}}</a></div>
+
+        <div class="courses-cell"> <p class="small"> {{c.start_date}} </p></div>
+        <div class="courses-cell"> <p class="small"> {{c.end_date}} </p></div>
+        <div class="courses-cell"> {{c.course_num}} </div>
+        <div class="courses-cell"> <p class="small" sytle="text-align: left">{{c.description}} </p></div>
+
+    {% endfor %}
+</div>
+
+{% endblock %}

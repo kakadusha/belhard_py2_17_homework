@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .duck_fox import get_random_duck_and_its_number, get_foxy_urls
-from .models import Student
+from .models import Student, Course, Grade
 
 
 html_config = {"admin": True, "debug": False}
@@ -65,7 +65,7 @@ def fox(request, num):
 
 
 def about(request):
-    return HttpResponse("<h4>Страница About</h4>")
+    return render(request, "main/about.html")
 
 
 def under_constuction(request, name_slug=""):
@@ -81,6 +81,16 @@ def students(request):
 def student(request, id):
     student = Student.objects.get(id=id)
     return render(request, "main/student.html", context={"student": student})
+
+
+def courses(request):
+    courses = Course.objects.all()
+    return render(request, "main/сourses.html", context={"сourses": courses})
+
+
+def course(request, id):
+    course = Course.objects.get(id=id)
+    return render(request, "main/сourse.html", context={"сourses": course})
 
 
 my_menu = [
@@ -122,6 +132,18 @@ class StudentView(LoginRequiredMixin, DetailView):
     context_object_name = "student"
     # pk_url_kwarg = 'pk' # т.к. тут slug ссылка по id уже не нужна
     login_url = "/login/"
+
+
+class CourseView(ListView):
+    model = Course
+    template_name = "main/courses.html"
+    context_object_name = "courses"
+
+
+class GradesView(ListView):
+    model = Grade
+    template_name = "main/grades.html"
+    context_object_name = "grades"
 
 
 def login(request):

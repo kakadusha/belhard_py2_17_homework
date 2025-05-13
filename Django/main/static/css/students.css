@@ -35,3 +35,16 @@
     height: 2.5em;
     margin-top: 3px;
 }
+
+.courses{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 60px 100px 170px 170px 60px 1fr;
+    text-align: center;
+}
+.courses-cell{
+    border: 1px dashed;
+    border-radius: 2px;
+    border-color: cadetblue;
+    line-height: 3em;
+}
